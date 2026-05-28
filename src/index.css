@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply transition-colors duration-300 antialiased font-sans overflow-x-hidden;
+  }
+}
+
+/* Custom Sleek Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(11, 15, 25, 0.05);
+}
+.dark ::-webkit-scrollbar-track {
+  background: rgba(11, 15, 25, 0.3);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(138, 43, 226, 0.25);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(138, 43, 226, 0.5);
+}
+
+/* 3D Flashcard Flip Core Mechanics */
+.perspective-1000 {
+  perspective: 1000px;
+}
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+.backface-hidden {
+  backface-visibility: hidden;
+}
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+/* Glassmorphism Grid Textures */
+.grid-bg {
+  background-image: linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+  background-size: 32px 32px;
+  background-position: center;
+}
+
+.grid-bg-light {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.015) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(0, 0, 0, 0.015) 1px, transparent 1px);
+  background-size: 32px 32px;
+  background-position: center;
+}
+
+/* Elegant Pulsing Glow Animations */
+.glow-pulse-torii {
+  animation: glow-pulse-torii-anim 2.5s infinite alternate ease-in-out;
+}
+@keyframes glow-pulse-torii-anim {
+  0% { box-shadow: 0 0 4px 0px rgba(255, 74, 90, 0.1); }
+  100% { box-shadow: 0 0 16px 2px rgba(255, 74, 90, 0.4); }
+}
+
+.glow-pulse-sakura {
+  animation: glow-pulse-sakura-anim 2.5s infinite alternate ease-in-out;
+}
+@keyframes glow-pulse-sakura-anim {
+  0% { box-shadow: 0 0 4px 0px rgba(246, 135, 179, 0.1); }
+  100% { box-shadow: 0 0 16px 2px rgba(246, 135, 179, 0.4); }
+}
+
+.glow-pulse-pond {
+  animation: glow-pulse-pond-anim 2.5s infinite alternate ease-in-out;
+}
+@keyframes glow-pulse-pond-anim {
+  0% { box-shadow: 0 0 4px 0px rgba(0, 242, 254, 0.1); }
+  100% { box-shadow: 0 0 16px 2px rgba(0, 242, 254, 0.4); }
+}
+
+.glow-pulse-bamboo {
+  animation: glow-pulse-bamboo-anim 2.5s infinite alternate ease-in-out;
+}
+@keyframes glow-pulse-bamboo-anim {
+  0% { box-shadow: 0 0 4px 0px rgba(0, 230, 118, 0.1); }
+  100% { box-shadow: 0 0 16px 2px rgba(0, 230, 118, 0.4); }
+}
+
+/* Anime fire glow */
+.fire-glow {
+  filter: drop-shadow(0 0 8px rgba(255, 90, 0, 0.6));
+}
