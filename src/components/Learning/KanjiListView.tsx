@@ -7,7 +7,7 @@ import { TOPIC_CATEGORIES, getKanjiTopicId } from '../../utils/topics';
 
 interface KanjiListViewProps {
   onBackToDashboard: () => void;
-  selectedLevel: 'N5' | 'N4' | 'ALL';
+  selectedLevel: 'N5' | 'N4' | 'N3' | 'ALL';
 }
 
 export default function KanjiListView({ onBackToDashboard, selectedLevel }: KanjiListViewProps) {

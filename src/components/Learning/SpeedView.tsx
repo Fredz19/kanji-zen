@@ -7,7 +7,7 @@ import { useAudio } from '../../hooks/useAudio';
 
 interface SpeedViewProps {
   onBackToDashboard: () => void;
-  selectedLevel: 'N5' | 'N4' | 'ALL';
+  selectedLevel: 'N5' | 'N4' | 'N3' | 'ALL';
 }
 
 interface SpeedHighScore {

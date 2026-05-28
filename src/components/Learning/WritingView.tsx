@@ -7,7 +7,7 @@ import { useAudio } from '../../hooks/useAudio';
 
 interface WritingViewProps {
   onBackToDashboard: () => void;
-  selectedLevel: 'N5' | 'N4' | 'ALL';
+  selectedLevel: 'N5' | 'N4' | 'N3' | 'ALL';
 }
 
 interface Coord {

@@ -16,7 +16,7 @@ export interface KanjiItem {
   meaning: string;
   onyomi: string[];
   kunyomi: string[];
-  level: 'N5' | 'N4';
+  level: 'N5' | 'N4' | 'N3';
   strokeCount: number;
   frequency: number;
   mnemonic: string;

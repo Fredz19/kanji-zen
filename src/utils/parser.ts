@@ -98,7 +98,7 @@ export function parseVocabulary(vocabCell: string): ParsedVocab[] {
 /**
  * Main parser function: Converts a Markdown Table String into a KanjiItem array.
  */
-export function parseKanjiMarkdown(markdown: string, level: 'N5' | 'N4' = 'N5'): KanjiItem[] {
+export function parseKanjiMarkdown(markdown: string, level: 'N5' | 'N4' | 'N3' = 'N5'): KanjiItem[] {
   if (!markdown) return [];
 
   const lines = markdown.split(/\r?\n/);

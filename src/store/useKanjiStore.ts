@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware';
 import { KanjiItem, getPresetForKanji } from '../data/presets';
 import { parseKanjiMarkdown } from '../utils/parser';
 import { calculateNextReview, ReviewStatus, INITIAL_SRS_STATE } from '../utils/srs';
-import { DEFAULT_N5_MARKDOWN, DEFAULT_N4_MARKDOWN } from '../data/defaultMarkdown';
+import { DEFAULT_N5_MARKDOWN, DEFAULT_N4_MARKDOWN, DEFAULT_N3_MARKDOWN } from '../data/defaultMarkdown';
 
 export interface DailyQuest {
   id: string;
@@ -60,7 +60,7 @@ interface KanjiStore {
   incrementStudyTime: (seconds: number) => void;
   trackConfusion: (kanjiA: string, kanjiB: string) => void;
   recoverLeech: (id: string) => void;
-  importCustomMarkdown: (markdown: string, level: 'N5' | 'N4') => { success: boolean; count: number };
+  importCustomMarkdown: (markdown: string, level: 'N5' | 'N4' | 'N3') => { success: boolean; count: number };
   exportProgress: () => string;
   importProgress: (jsonString: string) => boolean;
   resetDatabase: () => void;
@@ -145,7 +145,8 @@ export const useKanjiStore = create<KanjiStore>()(
         // 2. Parse default N5 and N4 markdowns
         const parsedN5 = parseKanjiMarkdown(DEFAULT_N5_MARKDOWN, 'N5');
         const parsedN4 = parseKanjiMarkdown(DEFAULT_N4_MARKDOWN, 'N4');
-        const combined = [...parsedN5, ...parsedN4];
+        const parsedN3 = parseKanjiMarkdown(DEFAULT_N3_MARKDOWN, 'N3');
+        const combined = [...parsedN5, ...parsedN4, ...parsedN3];
 
         // Enrich parsed cards with premium presets (KanjiVG strokes, sentences, mnemonics)
         const enriched = combined.map(item => {

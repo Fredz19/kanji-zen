@@ -8,7 +8,7 @@ import confetti from 'canvas-confetti';
 
 interface QuizViewProps {
   onBackToDashboard: () => void;
-  selectedLevel: 'N5' | 'N4' | 'ALL';
+  selectedLevel: 'N5' | 'N4' | 'N3' | 'ALL';
 }
 
 interface Question {

@@ -7,7 +7,7 @@ import Heatmap from './Heatmap';
 import AdminPanel from './AdminPanel';
 
 interface DashboardViewProps {
-  onStartMode: (mode: 'flashcard' | 'quiz' | 'writing' | 'speed' | 'confusion' | 'dictionary' | 'jlpt-exam', level: 'N5' | 'N4' | 'ALL') => void;
+  onStartMode: (mode: 'flashcard' | 'quiz' | 'writing' | 'speed' | 'confusion' | 'dictionary' | 'jlpt-exam', level: 'N5' | 'N4' | 'N3' | 'ALL') => void;
   darkMode: boolean;
   setDarkMode: (val: boolean) => void;
 }
@@ -37,7 +37,7 @@ export default function DashboardView({ onStartMode, darkMode, setDarkMode }: Da
   const { currentUser, logout } = useAuthStore();
   const [activeTab, setActiveTab] = useState<'learn' | 'admin'>('learn');
 
-  const [selectedLevelFilter, setSelectedLevelFilter] = useState<'N5' | 'N4' | 'ALL'>('ALL');
+  const [selectedLevelFilter, setSelectedLevelFilter] = useState<'N5' | 'N4' | 'N3' | 'ALL'>('ALL');
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   // Initialize presets on first render
@@ -71,6 +71,9 @@ export default function DashboardView({ onStartMode, darkMode, setDarkMode }: Da
 
   const n4Total = kanjiList.filter(c => c.level === 'N4').length;
   const n4Mastered = kanjiList.filter(c => c.level === 'N4' && c.repetitions >= 3).length;
+
+  const n3Total = kanjiList.filter(c => c.level === 'N3').length;
+  const n3Mastered = kanjiList.filter(c => c.level === 'N3' && c.repetitions >= 3).length;
 
   // Leech lists (suspended mistakes >= 8)
   const leechCards = kanjiList.filter(c => c.isLeech && c.isSuspended);
@@ -164,7 +167,7 @@ export default function DashboardView({ onStartMode, darkMode, setDarkMode }: Da
             KanjiZen <span className="text-sm font-normal text-gray-500 font-kanji">漢字禅</span>
           </h1>
           <p className="text-xs text-gray-400 mt-1">
-            Aplikasi belajar Kanji JLPT N5-N4 tergamifikasi dengan Sains Memori.
+            Aplikasi belajar Kanji JLPT N5-N4-N3 tergamifikasi dengan Sains Memori.
           </p>
         </div>
 
@@ -208,7 +211,7 @@ export default function DashboardView({ onStartMode, darkMode, setDarkMode }: Da
           {/* Level Filters (visible in learn mode only) */}
           {activeTab === 'learn' && (
             <div className="flex bg-gray-900/80 p-1 rounded-full border border-gray-800 text-xs">
-              {(['ALL', 'N5', 'N4'] as const).map(lvl => (
+              {(['ALL', 'N5', 'N4', 'N3'] as const).map(lvl => (
                 <button
                   key={lvl}
                   onClick={() => setSelectedLevelFilter(lvl)}
@@ -488,6 +491,20 @@ export default function DashboardView({ onStartMode, darkMode, setDarkMode }: Da
                     <div
                       className="h-full bg-tokyo-pond transition-all duration-500"
                       style={{ width: `${n4Total > 0 ? (n4Mastered / n4Total) * 100 : 0}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* N3 Progress Bar */}
+                <div className="space-y-1.5 pt-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-semibold text-tokyo-darkText">Tingkat N3</span>
+                    <span className="text-tokyo-bamboo font-bold">{n3Mastered} / {n3Total} Mastered</span>
+                  </div>
+                  <div className="w-full h-2 bg-gray-900 border border-gray-800 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-tokyo-bamboo transition-all duration-500"
+                      style={{ width: `${n3Total > 0 ? (n3Mastered / n3Total) * 100 : 0}%` }}
                     />
                   </div>
                 </div>

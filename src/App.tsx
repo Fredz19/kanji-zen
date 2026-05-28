@@ -21,7 +21,7 @@ export default function App() {
   const initializeAuth = useAuthStore(state => state.initializeAuth);
   
   const [activeView, setActiveView] = useState<'dashboard' | 'flashcard' | 'quiz' | 'writing' | 'speed' | 'confusion' | 'dictionary' | 'jlpt-exam'>('dashboard');
-  const [selectedLevelFilter, setSelectedLevelFilter] = useState<'N5' | 'N4' | 'ALL'>('ALL');
+  const [selectedLevelFilter, setSelectedLevelFilter] = useState<'N5' | 'N4' | 'N3' | 'ALL'>('ALL');
   
   // Theme dark mode state
   const [darkMode, setDarkMode] = useState<boolean>(true);
@@ -64,7 +64,7 @@ export default function App() {
     return () => clearInterval(timer);
   }, [currentUser]);
 
-  const handleStartMode = (mode: 'flashcard' | 'quiz' | 'writing' | 'speed' | 'confusion' | 'dictionary' | 'jlpt-exam', level: 'N5' | 'N4' | 'ALL') => {
+  const handleStartMode = (mode: 'flashcard' | 'quiz' | 'writing' | 'speed' | 'confusion' | 'dictionary' | 'jlpt-exam', level: 'N5' | 'N4' | 'N3' | 'ALL') => {
     setSelectedLevelFilter(level);
     setActiveView(mode);
   };

@@ -309,3 +309,379 @@ export const DEFAULT_N4_MARKDOWN = `## Tabel Kanji JLPT N4
 | **197** | Maju | 進 | シン | すす(む) | [cite_start]進む(すすむ): Maju <br> 進歩(しんぽ): Kemajuan [cite: 1] |
 | **198** | Berat | 重 | ジュウ <br> チョウ | おも(い) <br> かさ(ねる) | [cite_start]重い(おもい): Berat <br> 重要(じゅうよう): Penting [cite: 1] |
 `;
+
+export const DEFAULT_N3_MARKDOWN = `## Tabel Kanji JLPT N3
+
+| No | Arti Kanji | Kanji | Onyomi | Kunyomi | Kosakata JLPT N3 dengan Kanji |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **1** | Masyarakat, Publik | 公 | コウ | おおやけ | [cite_start]公園(こうえん): Taman umum <br> 公共(こうきょう): Umum/Publik [cite: 1] |
+| **2** | Pertukaran, Bersilang | 交 | コウ | まじ(わる) <br> ま(ぜる) | [cite_start]交通(こうつう): Lalu lintas <br> 交換(こうかん): Pertukaran [cite: 1] |
+| **3** | Produk, Menghasilkan | 産 | サン | う(む) <br> うぶ | [cite_start]生産(せいさん): Produksi <br> 産業(さんぎょう): Industri [cite: 1] |
+| **4** | Menanggung, Mengalahkan | 負 | フ | ま(ける) <br> お(う) | [cite_start]負ける(まける): Kalah <br> 負担(ふたん): Beban/Tanggung jawab [cite: 1] |
+| **5** | Melindungi, Menjaga | 守 | シュ | まも(る) | [cite_start]守る(まもる): Melindungi <br> 守備(しゅび): Pertahanan [cite: 1] |
+| **6** | Keberuntungan, Kebaikan | 幸 | コウ | さいわ(い) <br> しあわ(せ) | [cite_start]幸せ(しあわせ): Kebahagiaan <br> 幸運(こううん): Keberuntungan [cite: 1] |
+| **7** | Muncul, Penampilan | 現 | ゲン | あらわ(れる) | [cite_start]現在(げんざい): Saat ini/Sekarang <br> 現実(げんじつ): Kenyataan [cite: 1] |
+| **8** | Awal, Pertama | 初 | ショ | はじ(め) <br> はつ | [cite_start]初めて(はじめて): Pertama kali <br> 最初(さいしょ): Paling awal [cite: 1] |
+| **9** | Mampu, Berguna | 能 | ノウ | | [cite_start]可能(かのう): Mungkin/Mampu <br> 才能(さいのう): Bakat [cite: 1] |
+| **10** | Kemungkinan, Izin | 可 | カ | | [cite_start]可能(かのう): Mungkin <br> 不可(ふか): Tidak mungkin [cite: 1] |
+| **11** | Menghormati, Menuruti | 従 | ジュウ | したが(う) | [cite_start]従う(したがう): Mengikuti/Menuruti <br> 従業員(じゅうぎょういん): Karyawan [cite: 1] |
+| **12** | Melambangkan, Tanda | 号 | ゴウ | | [cite_start]番号(ばんごう): Nomor <br> 信号(しんごう): Lampu lalu lintas [cite: 1] |
+| **13** | Pokok, Dasar | 基 | キ | もと | [cite_start]基本(きほん): Dasar <br> 基準(きじゅん): Standar [cite: 1] |
+| **14** | Bertanggung jawab | 責 | セキ | せ(める) | [cite_start]責任(せきにん): Tanggung jawab <br> 責める(せめる): Menyalahkan [cite: 1] |
+| **15** | Tujuan, Sasaran | 的 | テキ | まと | [cite_start]目的(もくてき): Tujuan <br> 的(まと): Target/Sasaran [cite: 1] |
+| **16** | Perbedaan, Beda | 差 | サ | さ(す) | [cite_start]差(さ): Perbedaan <br> 差別(さべつ): Diskriminasi [cite: 1] |
+| **17** | Rencana, Buat | 計 | ケイ | はか(る) | [cite_start]計画(けいかく): Rencana <br> 合計(ごうけい): Total [cite: 1] |
+| **18** | Berakhir, Selesai | 了 | リョウ | | [cite_start]了解(りょうかい): Mengerti <br> 終了(しゅうりょう): Selesai [cite: 1] |
+| **19** | Pikiran, Perasaan | 感 | カン | | [cite_start]感じ(かんじ): Perasaan <br> 感謝(かんしゃ): Rasa syukur [cite: 1] |
+| **20** | Menyampaikan, Tradisi | 伝 | デン | つた(える) | [cite_start]伝える(つたえる): Menyampaikan <br> 伝統(でんとう): Tradisi [cite: 1] |
+| **21** | Jenis, Kategori | 類 | ルイ | たぐ(い) | [cite_start]種類(しゅるい): Jenis/Tipe <br> 人類(じんるい): Umat manusia [cite: 1] |
+| **22** | Mencari, Mengutip | 引 | イン | ひ(く) | [cite_start]引く(ひく): Menarik <br> 引用(いんよう): Kutipan [cite: 1] |
+| **23** | Bersih, Murni | 清 | セイ | きよ(い) | [cite_start]清潔(せいけつ): Bersih <br> 清める(きよめる): Memurnikan [cite: 1] |
+| **24** | Pikiran, Ingatan | 念 | ネン | | [cite_start]記念(きねん): Peringatan <br> 念のため(ねんのため): Sebagai tindakan pencegahan [cite: 1] |
+| **25** | Suasana, Jiwa | 雰 | フン | | [cite_start]雰囲気(ふんいき): Suasana/Atmosfer <br> 雰(ふん): Partikel/Suasana [cite: 1] |
+| **26** | Mengelilingi, Lingkungan | 囲 | イ | かこ(む) | [cite_start]周囲(しゅうい): Sekeliling <br> 囲む(かこむ): Mengelilingi [cite: 1] |
+| **27** | Terakhir, Terjauh | 末 | マツ | すえ | [cite_start]週末(しゅうまつ): Akhir pekan <br> 末(すえ): Akhir [cite: 1] |
+| **28** | Tiba-tiba, Acak | 突 | トツ | つ(く) | [cite_start]突然(とつぜん): Tiba-tiba <br> 突く(つく): Menusuk [cite: 1] |
+| **29** | Menentukan, Memutuskan | 決 | ケツ | き(める) | [cite_start]決める(きめる): Memutuskan <br> 解決(かいけつ): Solusi [cite: 1] |
+| **30** | Benar, Tepat | 確 | カク | たし(か) | [cite_start]確認(かくにん): Konfirmasi <br> 正確(せいかく): Tepat/Akurat [cite: 1] |
+| **31** | Mengumpulkan | 集 | シュウ | あつ(まる) | [cite_start]集まる(あつまる): Berkumpul <br> 収集(しゅうしゅう): Koleksi [cite: 1] |
+| **32** | Melepas, Memberikan | 放 | ホウ | はな(す) | [cite_start]放送(ほうそう): Siaran <br> 解放(かいほう): Pembebasan [cite: 1] |
+| **33** | Berbagi, Membagi | 分 | ブン <br> フン | わ(ける) | [cite_start]分ける(わける): Membagi <br> 分野(ぶんや): Bidang [cite: 1] |
+| **34** | Menerima, Terima | 受 | ジュ | う(ける) | [cite_start]受ける(うける): Menerima <br> 受験(じゅけん): Ujian masuk [cite: 1] |
+| **35** | Sarana, Cara | 法 | ホウ <br> ハッ | | [cite_start]方法(ほうほう): Metode/Cara <br> 法律(ほうりつ): Hukum [cite: 1] |
+| **36** | Mengalir, Arus | 流 | リュウ | なが(れる) | [cite_start]流れる(ながれる): Mengalir <br> 流行(りゅうこう): Tren/Mode [cite: 1] |
+| **37** | Sumber | 源 | ゲン | みなもと | [cite_start]資源(しげん): Sumber daya <br> 起源(きげん): Asal usul [cite: 1] |
+| **38** | Kaya | 富 | フ | と(む) | [cite_start]富(とみ): Kekayaan <br> 富士山(ふじさん): Gunung Fuji [cite: 1] |
+| **39** | Baik, Bagus | 良 | リョウ | よ(い) | [cite_start]良い(よい): Baik <br> 改良(かいりょう): Perbaikan [cite: 1] |
+| **40** | Cerah, Jelas | 明 | メイ <br> ミョウ | あか(るい) <br> あ(ける) | [cite_start]説明(せつめい): Penjelasan <br> 明日(あした): Besok [cite: 1] |
+| **41** | Kira-kira, Singkat | 約 | ヤク | | [cite_start]約束(やくそく): Janji <br> 約(やく): Kira-kira [cite: 1] |
+| **42** | Membalik, Berlawanan | 逆 | ギャク | さか(らう) | [cite_start]逆(ぎゃく): Sebaliknya <br> 逆転(ぎゃくてん): Berbalik [cite: 1] |
+| **43** | Setuju, Izin | 許 | キョ | ゆる(す) | [cite_start]許す(ゆるす): Memaafkan <br> 許可(きょか): Izin [cite: 1] |
+| **44** | Naik, Menaikkan | 上 | ジョウ | のぼ(る) | [cite_start]上がる(あがる): Naik <br> 上達(じょうたつ): Kemajuan [cite: 1] |
+| **45** | Turun | 降 | コウ | お(りる) <br> ふ(る) | [cite_start]降りる(おりる): Turun <br> 降る(ふる): Turun (hujan/salju) [cite: 1] |
+| **46** | Keputusan, Penyelesaian | 解 | カイ | と(く) | [cite_start]解く(とく): Menyelesaikan <br> 理解(りかい): Pemahaman [cite: 1] |
+| **47** | Mendukung, Bantuan | 助 | ジョ | たす(ける) | [cite_start]助ける(たすける): Membantu <br> 助言(じょげん): Saran [cite: 1] |
+| **48** | Meminjamkan | 貸 | タイ | か(す) | [cite_start]貸す(かす): Meminjamkan <br> 貸し出し(かしだし): Meminjam keluar [cite: 1] |
+| **49** | Perdagangan | 貿 | ボウ | | [cite_start]貿易(ぼうえき): Perdagangan internasional <br> 貿易会社(ぼうえきかいしゃ): Perusahaan dagang [cite: 1] |
+| **50** | Mengira, Berpikir | 思 | シ | おも(う) | [cite_start]思う(おもう): Berpikir <br> 思想(しそう): Ide/Pemikiran [cite: 1] |
+| **51** | Keinginan, Angan | 望 | ボウ | のぞ(む) | [cite_start]希望(きぼう): Harapan <br> 失望(しつぼう): Kecewa [cite: 1] |
+| **52** | Harapan | 願 | ガン | ねが(う) | [cite_start]お願い(おねがい): Permintaan <br> 願望(がんぼう): Keinginan [cite: 1] |
+| **53** | Takut | 恐 | キョウ | おそ(れる) | [cite_start]恐れ(おそれ): Rasa takut <br> 恐ろしい(おそろしい): Mengerikan [cite: 1] |
+| **54** | Marah | 怒 | ド | おこ(る) | [cite_start]怒る(おこる): Marah <br> 怒り(いかり): Kemarahan [cite: 1] |
+| **55** | Sedih | 悲 | ヒ | かな(しい) | [cite_start]悲しい(かなしい): Sedih <br> 悲劇(ひげき): Tragedi [cite: 1] |
+| **56** | Gembira | 喜 | キ | よろこ(ぶ) | [cite_start]喜ぶ(よろこぶ): Bergembira <br> 喜び(よろこび): Kegembiraan [cite: 1] |
+| **57** | Aneh, Luar biasa | 不思議 | ふしぎ | | [cite_start]不思議(ふしぎ): Aneh/Misterius <br> 思議(しぎ): Pengertian [cite: 1] |
+| **58** | Pikiran, Perasaan mendalam | 心 | シン | こころ | [cite_start]心配(しんぱい): Khawatir <br> 心(こころ): Hati/Pikiran [cite: 1] |
+| **59** | Kagum, Terkejut | 驚 | キョウ | おどろ(く) | [cite_start]驚く(おどろく): Terkejut <br> 驚き(おどろき): Keterkejutan [cite: 1] |
+| **60** | Bingung | 困 | コン | こま(る) | [cite_start]困る(こまる): Kesulitan <br> 困難(こんなん): Kesulitan [cite: 1] |
+| **61** | Meragukan, Sangsi | 疑 | ギ | うたが(う) | [cite_start]疑う(うたがう): Meragukan <br> 疑問(ぎもん): Keraguan [cite: 1] |
+| **62** | Percaya, Yakin | 信 | シン | | [cite_start]信じる(しんじる): Percaya <br> 自信(じしん): Kepercayaan diri [cite: 1] |
+| **63** | Tetap, Stabil | 安定 | あんてい | | [cite_start]安定(あんてい): Stabil <br> 安定した(あんていした): Stabil [cite: 1] |
+| **64** | Tingkat, Derajat | 程 | テイ | ほど | [cite_start]程度(ていど): Tingkat/Derajat <br> 程(ほど): Sekitar [cite: 1] |
+| **65** | Kenyataan, Hal | 事実 | じじつ | | [cite_start]事実(じじつ): Fakta <br> 現実(げんじつ): Kenyataan [cite: 1] |
+| **66** | Keadaan, Situasi | 状況 | じょうきょう | | [cite_start]状況(じょうきょう): Situasi <br> 状態(じょうたい): Kondisi [cite: 1] |
+| **67** | Kondisi | 状 | ジョウ | | [cite_start]状態(じょうたい): Kondisi <br> 現状(げんじょう): Kondisi saat ini [cite: 1] |
+| **68** | Arah, Menuju | 向 | コウ | む(く) | [cite_start]向かう(むかう): Menuju <br> 方向(ほうこう): Arah [cite: 1] |
+| **69** | Menukar, Perubahan | 変 | ヘン | か(わる) | [cite_start]変わる(かわる): Berubah <br> 変化(へんか): Perubahan [cite: 1] |
+| **70** | Bagian, Sisi | 側 | ソク | がわ | [cite_start]右側(みぎがわ): Sisi kanan <br> 内側(うちがわ): Bagian dalam [cite: 1] |
+| **71** | Memperhatikan, Kesadaran | 注 | チュウ | そそ(ぐ) | [cite_start]注意(ちゅうい): Perhatian <br> 注目(ちゅうもく): Fokus perhatian [cite: 1] |
+| **72** | Bab, Kalimat | 章 | ショウ | | [cite_start]文章(ぶんしょう): Paragraf/Kalimat <br> 章(しょう): Bab [cite: 1] |
+| **73** | Urusan, Masalah | 件 | ケン | | [cite_start]条件(じょうけん): Syarat <br> 事件(じけん): Peristiwa [cite: 1] |
+| **74** | Isi, Konten | 容 | ヨウ | | [cite_start]内容(ないよう): Isi/Konten <br> 容積(ようせき): Volume [cite: 1] |
+| **75** | Percobaan, Ujian | 験 | ケン | | [cite_start]経験(けいけん): Pengalaman <br> 試験(しけん): Ujian [cite: 1] |
+| **76** | Mengalami | 経 | ケイ | へ(る) | [cite_start]経験(けいけん): Pengalaman <br> 経済(けいざい): Ekonomi [cite: 1] |
+| **77** | Nyata, Sebenarnya | 実 | ジツ | みの(る) | [cite_start]実は(じつは): Sebenarnya <br> 現実(げんじつ): Kenyataan [cite: 1] |
+| **78** | Menyampaikan, Menceritakan | 語 | ゴ | かた(る) | [cite_start]物語(ものがたり): Cerita <br> 語る(かたる): Bercerita [cite: 1] |
+| **79** | Kesenangan, Bersantai | 楽 | ラク | たの(しい) | [cite_start]楽しむ(たのしむ): Menikmati <br> 楽に(らくに): Dengan mudah [cite: 1] |
+| **80** | Anggota, Ikut | 参 | サン | まい(る) | [cite_start]参加(さんか): Berpartisipasi <br> 参考(さんこう): Referensi [cite: 1] |
+| **81** | Mendapat, Membuka | 開 | カイ | ひら(く) | [cite_start]開く(ひらく): Membuka <br> 公開(こうかい): Dipublikasikan [cite: 1] |
+| **82** | Menutup | 閉 | ヘイ | し(める) | [cite_start]閉める(しめる): Menutup <br> 閉まる(しまる): Tertutup [cite: 1] |
+| **83** | Lingkungan, Sekitar | 境 | キョウ | さかい | [cite_start]環境(かんきょう): Lingkungan <br> 境界(きょうかい): Batas [cite: 1] |
+| **84** | Memilih, Seleksi | 選 | セン | えら(ぶ) | [cite_start]選ぶ(えらぶ): Memilih <br> 選手(せんしゅ): Atlet [cite: 1] |
+| **85** | Menaikkan | 挙 | キョ | あ(げる) | [cite_start]挙げる(あげる): Mengangkat <br> 選挙(せんきょ): Pemilihan [cite: 1] |
+| **86** | Pengetahuan, Belajar | 識 | シキ | し(る) | [cite_start]知識(ちしき): Pengetahuan <br> 意識(いしき): Kesadaran [cite: 1] |
+| **87** | Kecerdasan, Pikiran | 意 | イ | | [cite_start]意味(いみ): Arti <br> 注意(ちゅうい): Perhatian [cite: 1] |
+| **88** | Berkomunikasi, Menghubungi | 連 | レン | つ(れる) | [cite_start]連絡(れんらく): Kontak/Hubungi <br> 関連(かんれん): Hubungan [cite: 1] |
+| **89** | Bergantung, Tergantung | 関 | カン | かか(わる) | [cite_start]関係(かんけい): Hubungan <br> 関心(かんしん): Minat [cite: 1] |
+| **90** | Mengambil, Meraih | 取 | シュ | と(る) | [cite_start]取る(とる): Mengambil <br> 取り組む(とりくむ): Berusaha [cite: 1] |
+| **91** | Meninggalkan, Melangkah | 過 | カ | す(ぎる) <br> あやま(つ) | [cite_start]過ぎる(すぎる): Melewati <br> 経過(けいか): Perjalanan waktu [cite: 1] |
+| **92** | Terus, Lanjutan | 持 | ジ | も(つ) | [cite_start]持つ(もつ): Memegang <br> 維持(いじ): Mempertahankan [cite: 1] |
+| **93** | Menunggu | 待 | タイ | ま(つ) | [cite_start]待つ(まつ): Menunggu <br> 期待(きたい): Harapan/Ekspektasi [cite: 1] |
+| **94** | Karakter, Kepribadian | 性 | セイ | | [cite_start]性格(せいかく): Kepribadian <br> 重要性(じゅうようせい): Kepentingan [cite: 1] |
+| **95** | Tanggal, Periode | 期 | キ <br> ゴ | ちき | [cite_start]期間(きかん): Periode <br> 期待(きたい): Harapan [cite: 1] |
+| **96** | Keunikan, Khas | 特 | トク | | [cite_start]特別(とくべつ): Khusus <br> 特徴(とくちょう): Karakteristik [cite: 1] |
+| **97** | Tenang, Diam | 静 | セイ | しず(か) | [cite_start]静か(しずか): Tenang/Diam <br> 静止(せいし): Diam [cite: 1] |
+| **98** | Sulit | 難 | ナン | むずか(しい) | [cite_start]難しい(むずかしい): Sulit <br> 困難(こんなん): Kesulitan [cite: 1] |
+| **99** | Mudah | 易 | イ | やさ(しい) | [cite_start]容易(ようい): Mudah <br> 易しい(やさしい): Mudah [cite: 1] |
+| **100** | Sopan, Lembut | 優 | ユウ | やさ(しい) | [cite_start]優しい(やさしい): Lembut/Baik hati <br> 優秀(ゆうしゅう): Unggul [cite: 1] |
+| **101** | Kasar, Keras | 激 | ゲキ | はげ(しい) | [cite_start]激しい(はげしい): Sengit <br> 激変(げきへん): Perubahan drastis [cite: 1] |
+| **102** | Cantik, Anggun | 美 | ビ | うつく(しい) | [cite_start]美しい(うつくしい): Cantik <br> 美術(びじゅつ): Seni [cite: 1] |
+| **103** | Kotor, Menjijikkan | 汚 | オ | よご(れる) | [cite_start]汚れる(よごれる): Kotor <br> 汚染(おせん): Polusi [cite: 1] |
+| **104** | Berbahaya | 危 | キ | あぶ(ない) | [cite_start]危険(きけん): Bahaya <br> 危ない(あぶない): Berbahaya [cite: 1] |
+| **105** | Aman | 安 | アン | やす(い) | [cite_start]安全(あんぜん): Aman <br> 安心(あんしん): Tenang/Tenteram [cite: 1] |
+| **106** | Keras, Kuat | 強 | キョウ | つよ(い) | [cite_start]強い(つよい): Kuat <br> 強調(きょうちょう): Menekankan [cite: 1] |
+| **107** | Lemah | 弱 | ジャク | よわ(い) | [cite_start]弱い(よわい): Lemah <br> 弱点(じゃくてん): Kelemahan [cite: 1] |
+| **108** | Penuh, Memuaskan | 足 | ソク | た(りる) | [cite_start]満足(まんぞく): Puas <br> 不足(ふそく): Kekurangan [cite: 1] |
+| **109** | Sempit | 狭 | キョウ | せま(い) | [cite_start]狭い(せまい): Sempit <br> 狭める(せばめる): Mempersempit [cite: 1] |
+| **110** | Lebar, Luas | 広 | コウ | ひろ(い) | [cite_start]広い(ひろい): Luas <br> 広げる(ひろげる): Meluaskan [cite: 1] |
+| **111** | Cepat | 速 | ソク | はや(い) | [cite_start]速い(はやい): Cepat <br> 速度(そくど): Kecepatan [cite: 1] |
+| **112** | Lambat | 遅 | チ | おそ(い) | [cite_start]遅い(おそい): Lambat <br> 遅刻(ちこく): Terlambat [cite: 1] |
+| **113** | Ketidakmampuan, Tidak bisa | 無 | ム | な(い) | [cite_start]無理(むり): Tidak masuk akal <br> 無視(むし): Mengabaikan [cite: 1] |
+| **114** | Ada | 有 | ユウ | あ(る) | [cite_start]有名(ゆうめい): Terkenal <br> 有効(ゆうこう): Efektif [cite: 1] |
+| **115** | Menjelaskan, Mencari | 求 | キュウ | もと(める) | [cite_start]求める(もとめる): Mencari <br> 要求(ようきゅう): Permintaan [cite: 1] |
+| **116** | Memberikan | 与 | ヨ | あた(える) | [cite_start]与える(あたえる): Memberikan <br> 参与(さんよ): Berpartisipasi [cite: 1] |
+| **117** | Memimpin, Konduktor | 導 | ドウ | みちび(く) | [cite_start]導く(みちびく): Memimpin <br> 指導(しどう): Bimbingan [cite: 1] |
+| **118** | Belajar, Studi | 習 | シュウ | なら(う) | [cite_start]習う(ならう): Belajar dari <br> 練習(れんしゅう): Latihan [cite: 1] |
+| **119** | Prestasi, Mendapatkan | 得 | トク | え(る) | [cite_start]得る(える): Mendapatkan <br> 習得(しゅうとく): Penguasaan [cite: 1] |
+| **120** | Mengajar | 教 | キョウ | おし(える) | [cite_start]教える(おしえる): Mengajar <br> 教育(きょういく): Pendidikan [cite: 1] |
+| **121** | Kegiatan, Bergerak | 活 | カツ | | [cite_start]活動(かつどう): Aktivitas <br> 生活(せいかつ): Kehidupan [cite: 1] |
+| **122** | Pergi, Kunjungan | 訪 | ホウ | おとず(れる) | [cite_start]訪ねる(たずねる): Mengunjungi <br> 訪問(ほうもん): Kunjungan [cite: 1] |
+| **123** | Tiba | 到 | トウ | | [cite_start]到着(とうちゃく): Tiba/Kedatangan <br> 到達(とうたつ): Mencapai [cite: 1] |
+| **124** | Mulai | 始 | シ | はじ(める) | [cite_start]始める(はじめる): Memulai <br> 開始(かいし): Awal [cite: 1] |
+| **125** | Kerja, Mengerjakan | 務 | ム | つと(める) | [cite_start]勤務(きんむ): Bekerja <br> 務める(つとめる): Berupaya [cite: 1] |
+| **126** | Bangunan, Konstruksi | 建 | ケン | た(てる) | [cite_start]建てる(たてる): Membangun <br> 建物(たてもの): Bangunan [cite: 1] |
+| **127** | Kota | 市 | シ | いち | [cite_start]市場(いちば): Pasar <br> 都市(とし): Kota [cite: 1] |
+| **128** | Kota Besar | 都 | ト <br> ツ | みやこ | [cite_start]都市(とし): Kota <br> 東京都(とうきょうと): Metropolitan Tokyo [cite: 1] |
+| **129** | Kota Kecil | 町 | チョウ | まち | [cite_start]町(まち): Kota kecil <br> 町会(ちょうかい): Asosiasi kota [cite: 1] |
+| **130** | Rumah | 家 | カ <br> ケ | いえ <br> や | [cite_start]家族(かぞく): Keluarga <br> 家(いえ): Rumah [cite: 1] |
+| **131** | Ruangan | 部屋 | へや | | [cite_start]部屋(へや): Ruangan <br> 部屋代(へやだい): Biaya sewa kamar [cite: 1] |
+| **132** | Mendengarkan, Menyelidiki | 問 | モン | と(う) | [cite_start]問題(もんだい): Masalah <br> 質問(しつもん): Pertanyaan [cite: 1] |
+| **133** | Puncak, Kepala | 頭 | トウ | あたま | [cite_start]頭(あたま): Kepala <br> 先頭(せんとう): Di depan [cite: 1] |
+| **134** | Muka, Wajah | 顔 | ガン | かお | [cite_start]顔(かお): Wajah <br> 顔色(かおいろ): Ekspresi wajah [cite: 1] |
+| **135** | Rambut | 髪 | ハツ | かみ | [cite_start]髪(かみ): Rambut <br> 髪型(かみがた): Gaya rambut [cite: 1] |
+| **136** | Bahu | 肩 | ケン | かた | [cite_start]肩(かた): Bahu <br> 肩書き(かたがき): Jabatan [cite: 1] |
+| **137** | Perut | 腹 | フク | はら | [cite_start]腹(はら): Perut <br> 空腹(くうふく): Lapar [cite: 1] |
+| **138** | Belakang, Punggung | 背 | セイ | せ | [cite_start]背(せ): Punggung <br> 背景(はいけい): Latar belakang [cite: 1] |
+| **139** | Kaki, Kelas | 脚 | キャク | あし | [cite_start]脚(あし): Kaki <br> 脚本(きゃくほん): Naskah [cite: 1] |
+| **140** | Lengan | 腕 | ワン | うで | [cite_start]腕(うで): Lengan <br> 腕前(うでまえ): Kemampuan/Keahlian [cite: 1] |
+| **141** | Tidur | 眠 | ミン | ねむ(る) | [cite_start]眠る(ねむる): Tidur <br> 不眠(ふみん): Tidak bisa tidur [cite: 1] |
+| **142** | Sembuh, Sehat | 治 | ジ <br> チ | なお(る) | [cite_start]治る(なおる): Sembuh <br> 治療(ちりょう): Pengobatan [cite: 1] |
+| **143** | Penyakit | 病 | ビョウ | やまい | [cite_start]病院(びょういん): Rumah sakit <br> 病気(びょうき): Sakit [cite: 1] |
+| **144** | Lelah | 疲 | ヒ | つか(れる) | [cite_start]疲れる(つかれる): Lelah <br> 疲労(ひろう): Kelelahan [cite: 1] |
+| **145** | Merasakan, Indera | 感 | カン | | [cite_start]感じる(かんじる): Merasakan <br> 感情(かんじょう): Emosi [cite: 1] |
+| **146** | Mandi | 浴 | ヨク | あ(びる) | [cite_start]入浴(にゅうよく): Mandi <br> 浴びる(あびる): Mandi/Kena sinar [cite: 1] |
+| **147** | Musim | 季 | キ | | [cite_start]季節(きせつ): Musim <br> 四季(しき): Empat musim [cite: 1] |
+| **148** | Musim semi | 春 | シュン | はる | [cite_start]春(はる): Musim semi <br> 春休み(はるやすみ): Liburan musim semi [cite: 1] |
+| **149** | Musim gugur | 秋 | シュウ | あき | [cite_start]秋(あき): Musim gugur <br> 秋分(しゅうぶん): Titik balik musim gugur [cite: 1] |
+| **150** | Salju | 雪 | セツ | ゆき | [cite_start]雪(ゆき): Salju <br> 雪が降る(ゆきがふる): Salju turun [cite: 1] |
+| **151** | Angin | 風 | フウ | かぜ | [cite_start]風(かぜ): Angin <br> 台風(たいふう): Topan [cite: 1] |
+| **152** | Awan | 雲 | ウン | くも | [cite_start]雲(くも): Awan <br> 曇り(くもり): Berawan [cite: 1] |
+| **153** | Bintang | 星 | セイ | ほし | [cite_start]星(ほし): Bintang <br> 星座(せいざ): Rasi bintang [cite: 1] |
+| **154** | Gempa | 震 | シン | ふる(える) | [cite_start]地震(じしん): Gempa bumi <br> 震える(ふるえる): Gemetar [cite: 1] |
+| **155** | Hewan, Binatang | 動物 | どうぶつ | | [cite_start]動物(どうぶつ): Hewan <br> 動物園(どうぶつえん): Kebun binatang [cite: 1] |
+| **156** | Burung | 鳥 | チョウ | とり | [cite_start]鳥(とり): Burung <br> 小鳥(ことり): Burung kecil [cite: 1] |
+| **157** | Anjing | 犬 | ケン | いぬ | [cite_start]犬(いぬ): Anjing <br> 愛犬(あいけん): Anjing kesayangan [cite: 1] |
+| **158** | Kucing | 猫 | ビョウ | ねこ | [cite_start]猫(ねこ): Kucing <br> 子猫(こねこ): Anak kucing [cite: 1] |
+| **159** | Kuda | 馬 | バ | うま | [cite_start]馬(うま): Kuda <br> 競馬(けいば): Pacuan kuda [cite: 1] |
+| **160** | Sapi | 牛 | ギュウ | うし | [cite_start]牛(うし): Sapi <br> 牛肉(ぎゅうにく): Daging sapi [cite: 1] |
+| **161** | Pohon, Tanaman | 植 | ショク | う(える) | [cite_start]植える(うえる): Menanam <br> 植物(しょくぶつ): Tumbuhan [cite: 1] |
+| **162** | Benih | 根 | コン | ね | [cite_start]根(ね): Akar <br> 根拠(こんきょ): Dasar/Alasan [cite: 1] |
+| **163** | Buah | 実 | ジツ | み | [cite_start]果実(かじつ): Buah <br> 実る(みのる): Berbuah [cite: 1] |
+| **164** | Melukis, Menggambar | 描 | ビョウ | えが(く) | [cite_start]描く(えがく): Menggambar <br> 描写(びょうしゃ): Deskripsi [cite: 1] |
+| **165** | Seni | 芸 | ゲイ | | [cite_start]芸術(げいじゅつ): Seni <br> 芸能(げいのう): Hiburan [cite: 1] |
+| **166** | Musik | 音 | オン <br> イン | おと <br> ね | [cite_start]音楽(おんがく): Musik <br> 音(おと): Suara [cite: 1] |
+| **167** | Memetik, Membaca | 読 | ドク | よ(む) | [cite_start]読む(よむ): Membaca <br> 読書(どくしょ): Membaca buku [cite: 1] |
+| **168** | Menulis huruf | 字 | ジ | あざ | [cite_start]文字(もじ): Karakter tulisan <br> 漢字(かんじ): Kanji [cite: 1] |
+| **169** | Artikel | 記事 | きじ | | [cite_start]記事(きじ): Artikel berita <br> 新聞記事(しんぶんきじ): Artikel koran [cite: 1] |
+| **170** | Istilah, Kata | 語 | ゴ | かた(る) | [cite_start]単語(たんご): Kata <br> 用語(ようご): Istilah [cite: 1] |
+| **171** | Wawancara | 面 | メン | おも <br> つら | [cite_start]面接(めんせつ): Wawancara <br> 面白い(おもしろい): Menarik [cite: 1] |
+| **172** | Menyatakan | 声 | セイ | こえ | [cite_start]声明(せいめい): Pernyataan <br> 声をかける(こえをかける): Menyapa [cite: 1] |
+| **173** | Mengumumkan | 発 | ハツ | | [cite_start]発表(はっぴょう): Pengumuman <br> 出発(しゅっぱつ): Keberangkatan [cite: 1] |
+| **174** | Menyiarkan, Radio | 放 | ホウ | | [cite_start]放送(ほうそう): Siaran <br> 解放(かいほう): Membebaskan [cite: 1] |
+| **175** | Film, Sinema | 映 | エイ | うつ(る) | [cite_start]映画(えいが): Film <br> 映る(うつる): Terpantul [cite: 1] |
+| **176** | Foto | 撮 | サツ | と(る) | [cite_start]撮る(とる): Memotret <br> 撮影(さつえい): Pengambilan gambar [cite: 1] |
+| **177** | Pertunjukan, Bermain | 演 | エン | | [cite_start]演じる(えんじる): Berakting <br> 演奏(えんそう): Penampilan musik [cite: 1] |
+| **178** | Pentas | 舞 | ブ | ま(う) | [cite_start]舞台(ぶたい): Panggung <br> 舞う(まう): Menari [cite: 1] |
+| **179** | Bermain game | 遊 | ユウ | あそ(ぶ) | [cite_start]遊ぶ(あそぶ): Bermain <br> 遊園地(ゆうえんち): Taman bermain [cite: 1] |
+| **180** | Olahraga | 運 | ウン | はこ(ぶ) | [cite_start]運動(うんどう): Olahraga <br> 運ぶ(はこぶ): Membawa [cite: 1] |
+| **181** | Berlomba | 競 | キョウ | きそ(う) | [cite_start]競争(きょうそう): Persaingan <br> 競技(きょうぎ): Kompetisi [cite: 1] |
+| **182** | Menang | 勝 | ショウ | か(つ) | [cite_start]勝つ(かつ): Menang <br> 勝利(しょうり): Kemenangan [cite: 1] |
+| **183** | Perjuangan | 争 | ソウ | あらそ(う) | [cite_start]争う(あらそう): Bersaing <br> 競争(きょうそう): Persaingan [cite: 1] |
+| **184** | Keselamatan | 救 | キュウ | すく(う) | [cite_start]救う(すくう): Menyelamatkan <br> 救助(きゅうじょ): Penyelamatan [cite: 1] |
+| **185** | Masalah, Menghadapi | 対 | タイ | むか(う) | [cite_start]対応(たいおう): Merespons <br> 反対(はんたい): Berlawanan [cite: 1] |
+| **186** | Persiapan | 備 | ビ | そな(える) | [cite_start]備える(そなえる): Mempersiapkan <br> 準備(じゅんび): Persiapan [cite: 1] |
+| **187** | Usaha, Industri | 業 | ギョウ | わざ | [cite_start]産業(さんぎょう): Industri <br> 業務(ぎょうむ): Operasi bisnis [cite: 1] |
+| **188** | Pabrik, Kerajinan | 工 | コウ <br> ク | | [cite_start]工場(こうじょう): Pabrik <br> 工事(こうじ): Konstruksi [cite: 1] |
+| **189** | Jumlah, Harga | 価 | カ | あたい | [cite_start]価値(かち): Nilai <br> 物価(ぶっか): Harga barang [cite: 1] |
+| **190** | Bayar | 払 | フツ | はら(う) | [cite_start]払う(はらう): Membayar <br> 支払い(しはらい): Pembayaran [cite: 1] |
+| **191** | Membeli lebih mahal | 損 | ソン | そこ(なう) | [cite_start]損する(そんする): Merugi <br> 損害(そんがい): Kerusakan/Kerugian [cite: 1] |
+| **192** | Menguntungkan | 益 | エキ | | [cite_start]利益(りえき): Keuntungan <br> 益(えき): Manfaat [cite: 1] |
+| **193** | Manajer, Mengelola | 営 | エイ | いとな(む) | [cite_start]経営(けいえい): Manajemen <br> 営業(えいぎょう): Bisnis/Operasi [cite: 1] |
+| **194** | Laporan, Menginformasikan | 報 | ホウ | むく(いる) | [cite_start]報告(ほうこく): Laporan <br> 情報(じょうほう): Informasi [cite: 1] |
+| **195** | Teknik, Cara | 術 | ジュツ | | [cite_start]技術(ぎじゅつ): Teknologi <br> 手術(しゅじゅつ): Operasi medis [cite: 1] |
+| **196** | Ilmu, Sains | 科 | カ | | [cite_start]科学(かがく): Ilmu pengetahuan <br> 教科書(きょうかしょ): Buku teks [cite: 1] |
+| **197** | Riset, Penelitian | 究 | キュウ | きわ(める) | [cite_start]研究(けんきゅう): Penelitian <br> 追究(ついきゅう): Investigasi [cite: 1] |
+| **198** | Menerangkan, Teori | 論 | ロン | | [cite_start]議論(ぎろん): Perdebatan <br> 理論(りろん): Teori [cite: 1] |
+| **199** | Menyusun, Menata | 組 | ソ | く(む) | [cite_start]組む(くむ): Menyusun <br> 組み合わせ(くみあわせ): Kombinasi [cite: 1] |
+| **200** | Sumber daya, Material | 料 | リョウ | | [cite_start]材料(ざいりょう): Bahan <br> 料金(りょうきん): Tarif [cite: 1] |
+| **201** | Perjalanan | 旅 | リョ | たび | [cite_start]旅行(りょこう): Perjalanan <br> 旅(たび): Perjalanan [cite: 1] |
+| **202** | Mengunjungi | 遠 | エン | とお(い) | [cite_start]遠い(とおい): Jauh <br> 遠足(えんそく): Piknik [cite: 1] |
+| **203** | Transportasi | 交 | コウ | | [cite_start]交通(こうつう): Transportasi <br> 交差点(こうさてん): Persimpangan [cite: 1] |
+| **204** | Kereta | 鉄 | テツ | | [cite_start]鉄道(てつどう): Kereta api <br> 地下鉄(ちかてつ): Kereta bawah tanah [cite: 1] |
+| **205** | Pelabuhan, Pelabuhan udara | 港 | コウ | みなと | [cite_start]港(みなと): Pelabuhan <br> 空港(くうこう): Bandara [cite: 1] |
+| **206** | Terbang | 飛 | ヒ | と(ぶ) | [cite_start]飛ぶ(とぶ): Terbang <br> 飛行機(ひこうき): Pesawat terbang [cite: 1] |
+| **207** | Membawa, Mengangkut | 荷 | カ | に | [cite_start]荷物(にもつ): Bagasi <br> 荷(に): Beban [cite: 1] |
+| **208** | Mengikut, Menuju | 向 | コウ | む(かう) | [cite_start]方向(ほうこう): Arah <br> 向き(むき): Menghadap [cite: 1] |
+| **209** | Masuk, Bergabung | 加 | カ | くわ(える) | [cite_start]参加(さんか): Berpartisipasi <br> 加える(くわえる): Menambahkan [cite: 1] |
+| **210** | Bulan, Bulan kalender | 月 | ゲツ | つき | [cite_start]月曜日(げつようび): Senin <br> 来月(らいげつ): Bulan depan [cite: 1] |
+| **211** | Hari, Tanggal | 日 | ニチ | ひ | [cite_start]毎日(まいにち): Setiap hari <br> 今日(きょう): Hari ini [cite: 1] |
+| **212** | Awal, Permulaan | 初 | ショ | はじ(め) | [cite_start]初め(はじめ): Pertama kali <br> 当初(とうしょ): Awalnya [cite: 1] |
+| **213** | Akhir | 最後 | さいご | | [cite_start]最後(さいご): Terakhir <br> 最終(さいしゅう): Final [cite: 1] |
+| **214** | Lebih | 以上 | いじょう | | [cite_start]以上(いじょう): Lebih dari <br> 以外(いがい): Selain [cite: 1] |
+| **215** | Kurang | 以下 | いか | | [cite_start]以下(いか): Kurang dari <br> 以内(いない): Di dalam/Di bawah [cite: 1] |
+| **216** | Hampir, Kira-kira | 約 | ヤク | | [cite_start]約(やく): Kira-kira <br> 約束(やくそく): Janji [cite: 1] |
+| **217** | Khusus, Spesial | 専 | セン | もっぱ(ら) | [cite_start]専門(せんもん): Spesialisasi <br> 専攻(せんこう): Jurusan [cite: 1] |
+| **218** | Keterampilan, Keahlian | 技 | ギ | わざ | [cite_start]技術(ぎじゅつ): Teknologi <br> 技能(ぎのう): Keterampilan [cite: 1] |
+| **219** | Memiliki, Punya | 持 | ジ | も(つ) | [cite_start]持つ(もつ): Memiliki/Membawa <br> 気持ち(きもち): Perasaan [cite: 1] |
+| **220** | Mengambil | 取 | シュ | と(る) | [cite_start]受け取る(うけとる): Menerima <br> 取り組む(とりくむ): Berusaha [cite: 1] |
+| **221** | Memberikan, Menyerahkan | 渡 | ト | わた(す) | [cite_start]渡す(わたす): Menyerahkan <br> 渡る(わたる): Menyeberang [cite: 1] |
+| **222** | Berkurang | 減 | ゲン | へ(る) | [cite_start]減る(へる): Berkurang <br> 削減(さくげん): Pengurangan [cite: 1] |
+| **223** | Bertambah | 増 | ゾウ | ふ(える) | [cite_start]増える(ふえる): Bertambah <br> 増加(ぞうか): Peningkatan [cite: 1] |
+| **224** | Menghadiri | 出 | シュツ | で(る) | [cite_start]出席(しゅっせき): Kehadiran <br> 外出(がいしゅつ): Keluar [cite: 1] |
+| **225** | Absen | 欠 | ケツ | か(ける) | [cite_start]欠席(けっせき): Absen <br> 欠点(けってん): Kekurangan [cite: 1] |
+| **226** | Mengubah | 改 | カイ | あらた(める) | [cite_start]改める(あらためる): Memperbaiki <br> 改善(かいぜん): Perbaikan [cite: 1] |
+| **227** | Perbaikan | 修 | シュウ | おさ(める) | [cite_start]修理(しゅうり): Perbaikan <br> 修正(しゅうせい): Koreksi [cite: 1] |
+| **228** | Menambah, Cukup | 補 | ホ | おぎな(う) | [cite_start]補う(おぎなう): Melengkapi <br> 補助(ほじょ): Bantuan [cite: 1] |
+| **229** | Janji | 束 | ソク | たば | [cite_start]約束(やくそく): Janji <br> 束(たば): Ikat [cite: 1] |
+| **230** | Menolak | 断 | ダン | ことわ(る) | [cite_start]断る(ことわる): Menolak <br> 断言(だんげん): Menyatakan dengan tegas [cite: 1] |
+| **231** | Memberitahu | 知 | チ | し(らせる) | [cite_start]知らせる(しらせる): Memberitahu <br> 知識(ちしき): Pengetahuan [cite: 1] |
+| **232** | Ucapan, Kata-kata | 言 | ゴン | い(う) | [cite_start]言葉(ことば): Kata <br> 助言(じょげん): Nasihat [cite: 1] |
+| **233** | Tanda, Lambang | 印 | イン | しるし | [cite_start]印象(いんしょう): Kesan <br> 印(しるし): Tanda [cite: 1] |
+| **234** | Persyaratan | 条 | ジョウ | | [cite_start]条件(じょうけん): Persyaratan <br> 条約(じょうやく): Perjanjian [cite: 1] |
+| **235** | Rangkaian | 列 | レツ | | [cite_start]列(れつ): Baris/Antrean <br> 列車(れっしゃ): Kereta api [cite: 1] |
+| **236** | Contoh | 例 | レイ | たと(える) | [cite_start]例えば(たとえば): Misalnya <br> 例外(れいがい): Pengecualian [cite: 1] |
+| **237** | Adat, Kebiasaan | 慣 | カン | な(れる) | [cite_start]習慣(しゅうかん): Kebiasaan <br> 慣れる(なれる): Terbiasa [cite: 1] |
+| **238** | Kebudayaan | 化 | カ | | [cite_start]文化(ぶんか): Budaya <br> 化学(かがく): Kimia [cite: 1] |
+| **239** | Bangsa, Nasional | 族 | ゾク | | [cite_start]家族(かぞく): Keluarga <br> 民族(みんぞく): Suku bangsa [cite: 1] |
+| **240** | Agama | 宗 | シュウ | | [cite_start]宗教(しゅうきょう): Agama <br> 宗派(しゅうは): Denominasi [cite: 1] |
+| **241** | Antar, Global | 際 | サイ | きわ | [cite_start]国際(こくさい): Internasional <br> 際に(さいに): Saat/Waktu [cite: 1] |
+| **242** | Keamanan, Perlindungan | 護 | ゴ | まも(る) | [cite_start]保護(ほご): Perlindungan <br> 弁護士(べんごし): Pengacara [cite: 1] |
+| **243** | Mempertahankan | 保 | ホ | たも(つ) | [cite_start]保つ(たもつ): Mempertahankan <br> 保険(ほけん): Asuransi [cite: 1] |
+| **244** | Mewakili | 代 | ダイ | しろ | [cite_start]代表(だいひょう): Perwakilan <br> 代わり(かわり): Pengganti [cite: 1] |
+| **245** | Meningkat, Promosi | 進 | シン | すす(む) | [cite_start]進める(すすめる): Memajukan <br> 前進(ぜんしん): Kemajuan [cite: 1] |
+| **246** | Manfaat, Kegunaan | 利 | リ | き(く) | [cite_start]利用(りよう): Penggunaan <br> 利益(りえき): Keuntungan [cite: 1] |
+| **247** | Kepuasan, Memuaskan | 満 | マン | み(ちる) | [cite_start]満足(まんぞく): Puas <br> 満員(まんいん): Penuh [cite: 1] |
+| **248** | Penuh perhatian | 丁 | テイ | | [cite_start]丁寧(ていねい): Sopan <br> 丁度(ちょうど): Tepat [cite: 1] |
+| **249** | Sopan | 礼 | レイ | | [cite_start]礼儀(れいぎ): Sopan santun <br> 失礼(しつれい): Tidak sopan [cite: 1] |
+| **250** | Menghargai, Mengakui | 認 | ニン | みと(める) | [cite_start]認める(みとめる): Mengakui <br> 確認(かくにん): Konfirmasi [cite: 1] |
+| **251** | Perasaan tidak enak | 気まずい | きまずい | | [cite_start]気まずい(きまずい): Canggung <br> 気持ち(きもち): Perasaan [cite: 1] |
+| **252** | Mendekati | 近 | キン | ちか(い) | [cite_start]近い(ちかい): Dekat <br> 近づく(ちかづく): Mendekati [cite: 1] |
+| **253** | Menjauh | 離 | リ | はな(れる) | [cite_start]離れる(はなれる): Menjauh <br> 分離(ぶんり): Pemisahan [cite: 1] |
+| **254** | Ikut serta | 加 | カ | くわ(わる) | [cite_start]加わる(くわわる): Bergabung <br> 追加(ついか): Tambahan [cite: 1] |
+| **255** | Bertemu | 会 | カイ | あ(う) | [cite_start]会う(あう): Bertemu <br> 出会い(であい): Pertemuan [cite: 1] |
+| **256** | Mengenal | 知 | チ | し(る) | [cite_start]知り合い(しりあい): Kenalan <br> 知らない(しらない): Tidak tahu [cite: 1] |
+| **257** | Perpisahan | 別 | ベツ | わか(れる) | [cite_start]別れ(わかれ): Perpisahan <br> 区別(くべつ): Perbedaan [cite: 1] |
+| **258** | Mengantar | 送 | ソウ | おく(る) | [cite_start]送る(おくる): Mengirim/Mengantar <br> 放送(ほうそう): Siaran [cite: 1] |
+| **259** | Menyambut | 迎 | ゲイ | むか(える) | [cite_start]迎える(むかえる): Menyambut <br> 歓迎(かんげい): Sambutan hangat [cite: 1] |
+| **260** | Memperkenalkan | 紹 | ショウ | | [cite_start]紹介(しょうかい): Perkenalan <br> 自己紹介(じこしょうかい): Perkenalan diri [cite: 1] |
+| **261** | Menikah | 婚 | コン | | [cite_start]結婚(けっこん): Menikah <br> 婚約(こんやく): Pertunangan [cite: 1] |
+| **262** | Keluarga | 家族 | かぞく | | [cite_start]家族(かぞく): Keluarga <br> 家族全員(かぞくぜんいん): Seluruh keluarga [cite: 1] |
+| **263** | Bayi | 赤 | セキ | あか | [cite_start]赤ちゃん(あかちゃん): Bayi <br> 赤(あか): Merah [cite: 1] |
+| **264** | Kakek | 祖 | ソ | | [cite_start]祖父(そふ): Kakek <br> 祖母(そぼ): Nenek [cite: 1] |
+| **265** | Cucu | 孫 | ソン | まご | [cite_start]孫(まご): Cucu <br> 子孫(しそん): Keturunan [cite: 1] |
+| **266** | Saudara laki-laki | 弟 | テイ | おとうと | [cite_start]弟(おとうと): Adik laki-laki <br> 兄弟(きょうだい): Saudara laki-laki [cite: 1] |
+| **267** | Saudara perempuan | 姉妹 | しまい | | [cite_start]姉妹(しまい): Saudara perempuan <br> 姉(あね): Kakak perempuan [cite: 1] |
+| **268** | Suami | 夫 | フ | おっと | [cite_start]夫(おっと): Suami <br> 夫婦(ふうふ): Pasangan suami istri [cite: 1] |
+| **269** | Istri | 妻 | サイ | つま | [cite_start]妻(つま): Istri <br> 妻子(さいし): Istri dan anak [cite: 1] |
+| **270** | Berguna | 役 | ヤク | やく | [cite_start]役に立つ(やくにたつ): Berguna <br> 役割(やくわり): Peran [cite: 1] |
+| **271** | Tugas | 役 | エキ | やく | [cite_start]役目(やくめ): Tugas <br> 役人(やくにん): Pegawai negeri [cite: 1] |
+| **272** | Tujuan | 目的 | もくてき | | [cite_start]目的(もくてき): Tujuan <br> 目標(もくひょう): Target [cite: 1] |
+| **273** | Kebiasaan | 習慣 | しゅうかん | | [cite_start]習慣(しゅうかん): Kebiasaan <br> 慣習(かんしゅう): Adat istiadat [cite: 1] |
+| **274** | Masalah | 問 | モン | もん | [cite_start]問題(もんだい): Masalah <br> 質問(しつもん): Pertanyaan [cite: 1] |
+| **275** | Prestasi | 成 | セイ | な(る) | [cite_start]成功(せいこう): Sukses <br> 成長(せいちょう): Pertumbuhan [cite: 1] |
+| **276** | Gagal | 失 | シツ | うしな(う) | [cite_start]失敗(しっぱい): Gagal <br> 失う(うしなう): Kehilangan [cite: 1] |
+| **277** | Kesempatan | 機 | キ | はた | [cite_start]機会(きかい): Kesempatan <br> 機械(きかい): Mesin [cite: 1] |
+| **278** | Urgen | 急 | キュウ | いそ(ぐ) | [cite_start]急ぐ(いそぐ): Bergegas <br> 緊急(きんきゅう): Darurat [cite: 1] |
+| **279** | Langkah | 段 | ダン | | [cite_start]段階(だんかい): Tahap <br> 手段(しゅだん): Cara [cite: 1] |
+| **280** | Prosedur | 手続 | てつづき | | [cite_start]手続き(てつづき): Prosedur <br> 続く(つづく): Berlanjut [cite: 1] |
+| **281** | Melakukan, Mengikuti | 行 | コウ | おこな(う) | [cite_start]行う(おこなう): Melaksanakan <br> 行事(ぎょうじ): Acara [cite: 1] |
+| **282** | Memulai kembali | 再 | サイ | ふたた(び) | [cite_start]再び(ふたたび): Sekali lagi <br> 再開(さいかい): Melanjutkan kembali [cite: 1] |
+| **283** | Mengakhiri | 終 | シュウ | お(わる) | [cite_start]終わり(おわり): Akhir <br> 最終(さいしゅう): Terakhir [cite: 1] |
+| **284** | Mengusulkan, Menyarankan | 提 | テイ | さ(げる) | [cite_start]提案(ていあん): Usulan <br> 提出(ていしゅつ): Penyerahan [cite: 1] |
+| **285** | Menyetujui | 承 | ショウ | うけたまわ(る) | [cite_start]承認(しょうにん): Persetujuan <br> 了承(りょうしょう): Penerimaan [cite: 1] |
+| **286** | Menolak, Larangan | 禁 | キン | | [cite_start]禁止(きんし): Larangan <br> 禁煙(きんえん): Dilarang merokok [cite: 1] |
+| **287** | Terlibat | 係 | ケイ | かかり | [cite_start]係(かかり): Petugas <br> 関係(かんけい): Hubungan [cite: 1] |
+| **288** | Jawaban | 答 | トウ | こた(える) | [cite_start]答える(こたえる): Menjawab <br> 解答(かいとう): Jawaban [cite: 1] |
+| **289** | Peringatan, Tanda bahaya | 警 | ケイ | | [cite_start]警察(けいさつ): Polisi <br> 警告(けいこく): Peringatan [cite: 1] |
+| **290** | Kebakaran | 消 | ショウ | き(える) | [cite_start]消防(しょうぼう): Pemadam kebakaran <br> 消える(きえる): Menghilang [cite: 1] |
+| **291** | Pinjaman | 借 | シャク | か(りる) | [cite_start]借りる(かりる): Meminjam <br> 借金(しゃっきん): Hutang [cite: 1] |
+| **292** | Membuang | 捨 | シャ | す(てる) | [cite_start]捨てる(すてる): Membuang <br> 廃棄(はいき): Pembuangan [cite: 1] |
+| **293** | Menyimpan | 貯 | チョ | た(める) | [cite_start]貯める(ためる): Menabung <br> 貯金(ちょきん): Tabungan [cite: 1] |
+| **294** | Mengumpulkan | 集 | シュウ | あつ(める) | [cite_start]集める(あつめる): Mengumpulkan <br> 収集(しゅうしゅう): Koleksi [cite: 1] |
+| **295** | Memisahkan | 別 | ベツ | わか(れる) | [cite_start]分別(ぶんべつ): Pemilahan <br> 別れ(わかれ): Perpisahan [cite: 1] |
+| **296** | Membersihkan | 掃 | ソウ | は(く) | [cite_start]掃除(そうじ): Membersihkan <br> 掃く(はく): Menyapu [cite: 1] |
+| **297** | Memasak | 料理 | りょうり | | [cite_start]料理(りょうり): Memasak/Masakan <br> 料理人(りょうりにん): Koki [cite: 1] |
+| **298** | Rasa, Cita-rasa | 味 | ミ | あじ | [cite_start]美味しい(おいしい): Enak <br> 味わう(あじわう): Merasakan [cite: 1] |
+| **299** | Bahan | 材 | ザイ | き | [cite_start]材料(ざいりょう): Bahan/Bahan baku <br> 材木(ざいもく): Kayu bangunan [cite: 1] |
+| **300** | Kebiasaan makan | 食 | ショク | た(べる) | [cite_start]食事(しょくじ): Makan <br> 食生活(しょくせいかつ): Pola makan [cite: 1] |
+| **301** | Minuman | 飲 | イン | の(む) | [cite_start]飲み物(のみもの): Minuman <br> 飲酒(いんしゅ): Minum alkohol [cite: 1] |
+| **302** | Minyak, Gemuk | 脂 | シ | あぶら | [cite_start]脂肪(しぼう): Lemak <br> 脂(あぶら): Minyak/Lemak [cite: 1] |
+| **303** | Garam | 塩 | エン | しお | [cite_start]塩(しお): Garam <br> 塩辛い(しおからい): Asin [cite: 1] |
+| **304** | Manis | 甘 | カン | あま(い) | [cite_start]甘い(あまい): Manis <br> 甘やかす(あまやかす): Memanjakan [cite: 1] |
+| **305** | Panas (makanan) | 熱 | ネツ | あつ(い) | [cite_start]熱い(あつい): Panas <br> 熱心(ねっしん): Bersemangat [cite: 1] |
+| **306** | Dingin (makanan) | 冷 | レイ | つめ(たい) | [cite_start]冷たい(つめたい): Dingin <br> 冷蔵庫(れいぞうこ): Kulkas [cite: 1] |
+| **307** | Pekerjaan rumah | 家事 | かじ | | [cite_start]家事(かじ): Pekerjaan rumah <br> 家庭(かてい): Rumah tangga [cite: 1] |
+| **308** | Berbelanja | 買い物 | かいもの | | [cite_start]買い物(かいもの): Belanja <br> 買い物袋(かいものぶくろ): Tas belanja [cite: 1] |
+| **309** | Uang | 金 | キン | かね | [cite_start]お金(おかね): Uang <br> 金額(きんがく): Jumlah uang [cite: 1] |
+| **310** | Koin | 貨 | カ | | [cite_start]貨幣(かへい): Mata uang <br> 貨物(かもつ): Kargo [cite: 1] |
+| **311** | Kartu | 券 | ケン | | [cite_start]乗車券(じょうしゃけん): Tiket kereta <br> 食券(しょっけん): Tiket makanan [cite: 1] |
+| **312** | Harga diskon | 安 | アン | やす(い) | [cite_start]安売り(やすうり): Obral <br> 値段(ねだん): Harga [cite: 1] |
+| **313** | Penjualan | 販 | ハン | | [cite_start]販売(はんばい): Penjualan <br> 自動販売機(じどうはんばいき): Mesin penjual otomatis [cite: 1] |
+| **314** | Toko swalayan | 店 | テン | みせ | [cite_start]百貨店(ひゃっかてん): Department store <br> お店(おみせ): Toko [cite: 1] |
+| **315** | Antrean | 列 | レツ | ならぶ | [cite_start]行列(ぎょうれつ): Antrean <br> 列(れつ): Baris [cite: 1] |
+| **316** | Menulis surat | 紙 | シ | かみ | [cite_start]手紙(てがみ): Surat <br> 便箋(びんせん): Kertas surat [cite: 1] |
+| **317** | Kartu pos | 葉書 | はがき | | [cite_start]葉書(はがき): Kartu pos <br> 絵葉書(えはがき): Kartu pos bergambar [cite: 1] |
+| **318** | Paket | 荷物 | にもつ | | [cite_start]荷物(にもつ): Barang/Koper <br> 小荷物(こにもつ): Paket kecil [cite: 1] |
+| **319** | Alamat | 住所 | じゅうしょ | | [cite_start]住所(じゅうしょ): Alamat <br> 住所録(じゅうしょろく): Buku alamat [cite: 1] |
+| **320** | Telephone | 電話 | でんわ | | [cite_start]電話(でんわ): Telepon <br> 携帯電話(けいたいでんわ): Ponsel [cite: 1] |
+| **321** | Mengangkat | 挙 | キョ | あ(がる) | [cite_start]挙がる(あがる): Terangkat <br> 挙げる(あげる): Mengangkat [cite: 1] |
+| **322** | Hadir, Menghadiri | 出席 | しゅっせき | | [cite_start]出席(しゅっせき): Hadir <br> 欠席(けっせき): Absen [cite: 1] |
+| **323** | Pertemuan | 会議 | かいぎ | | [cite_start]会議(かいぎ): Rapat <br> 会議室(かいぎしつ): Ruang rapat [cite: 1] |
+| **324** | Laporan | 報告 | ほうこく | | [cite_start]報告(ほうこく): Laporan <br> 中間報告(ちゅうかんほうこく): Laporan sementara [cite: 1] |
+| **325** | Rencana kerja | 計 | ケイ | はかる | [cite_start]計画(けいかく): Rencana <br> 予計(よけい): Perkiraan [cite: 1] |
+| **326** | Dokumen | 書類 | しょるい | | [cite_start]書類(しょるい): Dokumen <br> 書類作成(しょるいさくせい): Pembuatan dokumen [cite: 1] |
+| **327** | Pengiriman | 配 | ハイ | くば(る) | [cite_start]配る(くばる): Mendistribusikan <br> 配達(はいたつ): Pengiriman [cite: 1] |
+| **328** | Korespondensi | 返 | ヘン | かえ(る) | [cite_start]返す(かえす): Mengembalikan <br> 返事(へんじ): Balasan [cite: 1] |
+| **329** | Meminta | 頼 | ライ | たの(む) | [cite_start]頼む(たのむ): Meminta/Mengandalkan <br> 依頼(いらい): Permintaan [cite: 1] |
+| **330** | Hubungan | 関係 | かんけい | | [cite_start]関係(かんけい): Hubungan <br> 無関係(むかんけい): Tidak ada hubungan [cite: 1] |
+| **331** | Percakapan | 会話 | かいわ | | [cite_start]会話(かいわ): Percakapan <br> 日常会話(にちじょうかいわ): Percakapan sehari-hari [cite: 1] |
+| **332** | Negosiasi | 交渉 | こうしょう | | [cite_start]交渉(こうしょう): Negosiasi <br> 交渉中(こうしょうちゅう): Sedang negosiasi [cite: 1] |
+| **333** | Kerja sama | 協力 | きょうりょく | | [cite_start]協力(きょうりょく): Kerja sama <br> 協力者(きょうりょくしゃ): Rekan [cite: 1] |
+| **334** | Kompetisi | 競争 | きょうそう | | [cite_start]競争(きょうそう): Persaingan <br> 競争力(きょうそうりょく): Daya saing [cite: 1] |
+| **335** | Mengusir, Menyingkirkan | 除 | ジョ | のぞ(く) | [cite_start]除く(のぞく): Menyingkirkan <br> 除外(じょがい): Pengecualian [cite: 1] |
+| **336** | Pengantar | 序 | ジョ | | [cite_start]序文(じょぶん): Pengantar <br> 序列(じょれつ): Urutan [cite: 1] |
+| **337** | Sisi depan | 前 | ゼン | まえ | [cite_start]前面(ぜんめん): Bagian depan <br> 以前(いぜん): Sebelumnya [cite: 1] |
+| **338** | Sisi belakang | 後 | コウ | うしろ | [cite_start]後ろ(うしろ): Belakang <br> 後悔(こうかい): Menyesal [cite: 1] |
+| **339** | Kiri | 左 | サ | ひだり | [cite_start]左側(ひだりがわ): Sebelah kiri <br> 左折(させつ): Belok kiri [cite: 1] |
+| **340** | Kanan | 右 | ユウ | みぎ | [cite_start]右側(みぎがわ): Sebelah kanan <br> 右折(うせつ): Belok kanan [cite: 1] |
+| **341** | Atas | 上 | ジョウ | うえ | [cite_start]上(うえ): Atas <br> 上昇(じょうしょう): Naik/Meningkat [cite: 1] |
+| **342** | Bawah | 下 | カ | した | [cite_start]下(した): Bawah <br> 下降(かこう): Turun/Menurun [cite: 1] |
+| **343** | Dalam | 中 | チュウ | なか | [cite_start]中心(ちゅうしん): Pusat <br> 最中(さいちゅう): Di tengah-tengah [cite: 1] |
+| **344** | Luar | 外 | ガイ | そと | [cite_start]外国(がいこく): Luar negeri <br> 外出(がいしゅつ): Keluar [cite: 1] |
+| **345** | Dekat | 近 | キン | ちかく | [cite_start]近くに(ちかくに): Di dekat <br> 付近(ふきん): Sekitar [cite: 1] |
+| **346** | Jauh | 遠 | エン | とおく | [cite_start]遠く(とおく): Tempat jauh <br> 遠方(えんぽう): Tempat yang jauh [cite: 1] |
+| **347** | Maju, Ke depan | 前 | ゼン | すす(む) | [cite_start]前進(ぜんしん): Maju <br> 前向き(まえむき): Berpandangan positif [cite: 1] |
+| **348** | Mundur, Ke belakang | 後 | コウ | しりぞ(く) | [cite_start]後退(こうたい): Mundur <br> 後ろ向き(うしろむき): Pesimis [cite: 1] |
+| **349** | Masa depan | 未 | ミ | いま(だ) | [cite_start]未来(みらい): Masa depan <br> 未定(みてい): Belum ditentukan [cite: 1] |
+| **350** | Masa lalu | 去 | キョ | す(ぎる) | [cite_start]過去(かこ): Masa lalu <br> 去年(きょねん): Tahun lalu [cite: 1] |
+| **351** | Sekarang | 現 | ゲン | いま | [cite_start]現在(げんざい): Saat ini <br> 現代(げんだい): Zaman modern [cite: 1] |
+| **352** | Bertambah | 増 | ゾウ | ふ(やす) | [cite_start]増やす(ふやす): Meningkatkan <br> 人口増加(じんこうぞうか): Pertumbuhan penduduk [cite: 1] |
+| **353** | Berkurang | 減 | ゲン | へ(らす) | [cite_start]減らす(へらす): Mengurangi <br> 人口減少(じんこうげんしょう): Penurunan populasi [cite: 1] |
+| **354** | Perubahan | 変化 | へんか | | [cite_start]変化(へんか): Perubahan <br> 変化する(へんかする): Berubah [cite: 1] |
+| **355** | Perkembangan | 発展 | はってん | | [cite_start]発展(はってん): Perkembangan <br> 発展途上国(はってんとじょうこく): Negara berkembang [cite: 1] |
+| **356** | Penemuan | 発見 | はっけん | | [cite_start]発見(はっけん): Penemuan <br> 発見する(はっけんする): Menemukan [cite: 1] |
+| **357** | Penciptaan | 創 | ソウ | つく(る) | [cite_start]創作(そうさく): Karya kreatif <br> 創造(そうぞう): Penciptaan [cite: 1] |
+| **358** | Memperbaiki | 修復 | しゅうふく | | [cite_start]修復(しゅうふく): Perbaikan <br> 修復作業(しゅうふくさぎょう): Pekerjaan perbaikan [cite: 1] |
+| **359** | Menghancurkan | 壊 | カイ | こわ(す) | [cite_start]壊す(こわす): Menghancurkan <br> 崩壊(ほうかい): Runtuh [cite: 1] |
+| **360** | Pembuangan | 廃 | ハイ | すた(れる) | [cite_start]廃棄(はいき): Pembuangan <br> 廃止(はいし): Penghapusan [cite: 1] |
+| **361** | Lingkungan hidup | 環境 | かんきょう | | [cite_start]環境(かんきょう): Lingkungan <br> 自然環境(しぜんかんきょう): Lingkungan alam [cite: 1] |
+| **362** | Alam | 自然 | しぜん | | [cite_start]自然(しぜん): Alam <br> 自然災害(しぜんさいがい): Bencana alam [cite: 1] |
+| **363** | Lautan | 海洋 | かいよう | | [cite_start]海洋(かいよう): Lautan <br> 深海(しんかい): Laut dalam [cite: 1] |
+| **364** | Hutan | 森林 | しんりん | | [cite_start]森林(しんりん): Hutan <br> 森林破壊(しんりんはかい): Deforestasi [cite: 1] |
+| **365** | Sumber daya alam | 資源 | しげん | | [cite_start]資源(しげん): Sumber daya <br> 天然資源(てんねんしげん): Sumber daya alam [cite: 1] |
+| **366** | Polusi | 汚染 | おせん | | [cite_start]汚染(おせん): Polusi <br> 大気汚染(たいきおせん): Polusi udara [cite: 1] |
+| **367** | Daur ulang | 再利用 | さいりよう | | [cite_start]再利用(さいりよう): Daur ulang <br> リサイクル: Daur ulang [cite: 1] |
+| **368** | Energi | 工ネルギー | エネルギー | | [cite_start]エネルギー: Energi <br> 省エネ(しょうエネ): Hemat energi [cite: 1] |
+| **369** | Masyarakat | 社会 | しゃかい | | [cite_start]社会(しゃかい): Masyarakat <br> 社会問題(しゃかいもんだい): Masalah sosial [cite: 1] |
+| **370** | Kesehatan | 健康 | けんこう | | [cite_start]健康(けんこう): Kesehatan <br> 健康的(けんこうてき): Sehat [cite: 1] |
+`;
