@@ -15,7 +15,7 @@ export default function KanjiListView({ onBackToDashboard, selectedLevel }: Kanj
 
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [levelFilter, setLevelFilter] = useState<'ALL' | 'N5' | 'N4'>(selectedLevel);
+  const [levelFilter, setLevelFilter] = useState<'ALL' | 'N5' | 'N4' | 'N3'>(selectedLevel);
   const [masteryFilter, setMasteryFilter] = useState<'ALL' | 'NEW' | 'LEARNING' | 'MASTERED'>('ALL');
   
   // Selected Kanji details modal
@@ -158,13 +158,13 @@ export default function KanjiListView({ onBackToDashboard, selectedLevel }: Kanj
             Kamus Kanji Zen <span className="text-sm font-normal text-gray-500 font-kanji">漢字辞書</span>
           </h1>
           <p className="text-xs text-gray-400 mt-1">
-            Penjelajah detail visual, bacaan, dan progress ingatan 246 Kanji N5 & N4.
+            Penjelajah detail visual, bacaan, dan progress ingatan 668 Kanji N5, N4 & N3.
           </p>
         </div>
 
         {/* Level Filters */}
         <div className="flex bg-gray-900/85 p-1 rounded-full border border-gray-800 text-xs shrink-0 self-start md:self-center">
-          {(['ALL', 'N5', 'N4'] as const).map(lvl => (
+          {(['ALL', 'N5', 'N4', 'N3'] as const).map(lvl => (
             <button
               key={lvl}
               onClick={() => setLevelFilter(lvl)}

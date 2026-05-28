@@ -26,7 +26,7 @@ export default function JLPTExamView({ onBackToDashboard, selectedLevel }: JLPTE
   const { kanjiList } = useKanjiStore();
   const audio = useAudio();
 
-  const [examLevel, setExamLevel] = useState<'N5' | 'N4'>(selectedLevel === 'ALL' ? 'N5' : selectedLevel);
+  const [examLevel, setExamLevel] = useState<'N5' | 'N4' | 'N3'>(selectedLevel === 'ALL' ? 'N5' : selectedLevel);
   const [examState, setExamState] = useState<'briefing' | 'testing' | 'reviewing'>('briefing');
 
   // Exam variables
@@ -50,7 +50,7 @@ export default function JLPTExamView({ onBackToDashboard, selectedLevel }: JLPTE
   };
 
   // Compile exam questions dynamically from active kanjiList
-  const buildExamQuestions = (level: 'N5' | 'N4') => {
+  const buildExamQuestions = (level: 'N5' | 'N4' | 'N3') => {
     let pool = kanjiList.filter(c => c.level === level && !c.isSuspended);
     if (pool.length < 10) {
       // Fallback in case list is somehow too short
@@ -321,6 +321,16 @@ export default function JLPTExamView({ onBackToDashboard, selectedLevel }: JLPTE
                   }`}
                 >
                   JLPT N4
+                </button>
+                <button
+                  onClick={() => setExamLevel('N3')}
+                  className={`flex-1 py-2 rounded-xl text-xs font-black transition-all ${
+                    examLevel === 'N3'
+                      ? 'bg-tokyo-bamboo text-tokyo-darkText shadow-bamboo'
+                      : 'text-gray-400 hover:text-gray-200'
+                  }`}
+                >
+                  JLPT N3
                 </button>
               </div>
             </div>
