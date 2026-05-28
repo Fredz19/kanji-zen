@@ -16,7 +16,8 @@ export default function LoginView() {
   
   const { switchUserProgress } = useKanjiStore();
 
-  const [tab, setTab] = useState<'login' | 'token'>('login');
+  const hasMaster = usersRegistry.some(u => u.role === 'master');
+  const [tab, setTab] = useState<'login' | 'token' | 'setup'>('token');
   
   // Form states
   const [username, setUsername] = useState('');
@@ -38,7 +39,18 @@ export default function LoginView() {
     initializeAuth();
   }, []);
 
-  const hasMaster = usersRegistry.some(u => u.role === 'master');
+  // Sync tab based on whether master account exists
+  useEffect(() => {
+    if (usersRegistry.length > 0) {
+      if (hasMaster) {
+        setTab('login');
+      } else {
+        setTab('token');
+      }
+    } else {
+      setTab('token');
+    }
+  }, [usersRegistry, hasMaster]);
 
   const triggerConfetti = () => {
     confetti({
@@ -158,7 +170,6 @@ export default function LoginView() {
           </p>
         </div>
 
-        {/* Auth Box */}
         <motion.div 
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -168,224 +179,249 @@ export default function LoginView() {
           {/* Decorative Torii Grid */}
           <div className="absolute inset-0 grid-bg opacity-15 rounded-3xl pointer-events-none" />
 
-          {/* Setup Master Password (First Run) */}
-          {!hasMaster ? (
-            <div className="space-y-4 relative z-10">
-              <div className="text-center space-y-1.5 pb-2">
-                <div className="mx-auto w-12 h-12 rounded-2xl bg-tokyo-torii/15 border border-tokyo-torii/30 flex items-center justify-center text-tokyo-torii text-xl">
-                  <Shield />
-                </div>
-                <h2 className="text-lg font-extrabold text-tokyo-darkText">Inisialisasi Master Akun</h2>
-                <p className="text-[11px] text-gray-400 px-4">
-                  Ini adalah pertama kalinya aplikasi dijalankan. Silakan tetapkan password untuk **Akses Master** Anda.
-                </p>
-              </div>
-
-              <form onSubmit={handleRegisterMaster} className="space-y-4">
-                {error && (
-                  <div className="p-3 rounded-xl bg-tokyo-torii/10 border border-tokyo-torii/30 text-tokyo-torii text-xs flex items-center gap-2">
-                    <AlertCircle size={14} className="shrink-0" />
-                    <span>{error}</span>
-                  </div>
-                )}
-
-                <div className="space-y-1.5">
-                  <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block">Password Master Baru</label>
-                  <div className="relative">
-                    <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-500">
-                      <Lock size={15} />
-                    </span>
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      value={masterPassword}
-                      onChange={(e) => setMasterPassword(e.target.value)}
-                      placeholder="Minimal 6 karakter..."
-                      className="w-full pl-10 pr-10 py-3 rounded-xl bg-gray-950/45 border border-gray-800 text-sm text-tokyo-darkText placeholder-gray-600 focus:outline-none focus:border-tokyo-torii transition-colors"
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-500 hover:text-gray-300"
-                    >
-                      {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
-                    </button>
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block">Konfirmasi Password Master</label>
-                  <div className="relative">
-                    <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-500">
-                      <Lock size={15} />
-                    </span>
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      value={confirmMasterPassword}
-                      onChange={(e) => setConfirmMasterPassword(e.target.value)}
-                      placeholder="Ulangi password..."
-                      className="w-full pl-10 pr-10 py-3 rounded-xl bg-gray-950/45 border border-gray-800 text-sm text-tokyo-darkText placeholder-gray-600 focus:outline-none focus:border-tokyo-torii transition-colors"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full py-3 rounded-xl bg-gradient-to-r from-tokyo-torii to-tokyo-sakura text-tokyo-darkText text-sm font-extrabold shadow-lg hover:shadow-torii/40 transition-all active:scale-[0.98]"
-                >
-                  {loading ? 'Menyimpan...' : 'Aktifkan Akses Master ✓'}
-                </button>
-              </form>
+          <div className="space-y-5 relative z-10">
+            {/* Tab toggles */}
+            <div className="flex bg-gray-950/50 p-1 rounded-xl border border-gray-800 text-xs">
+              {hasMaster ? (
+                <>
+                  <button
+                    onClick={() => { setTab('login'); setError(null); setSuccess(null); }}
+                    className={`flex-1 py-2 rounded-lg font-bold transition-all duration-300 ${
+                      tab === 'login'
+                        ? 'bg-tokyo-sakura text-tokyo-darkText shadow-sakura'
+                        : 'text-gray-400 hover:text-gray-200'
+                    }`}
+                  >
+                    Masuk Akun
+                  </button>
+                  <button
+                    onClick={() => { setTab('token'); setError(null); setSuccess(null); }}
+                    className={`flex-1 py-2 rounded-lg font-bold transition-all duration-300 ${
+                      tab === 'token'
+                        ? 'bg-tokyo-pond text-[#0b0f19] shadow-pond'
+                        : 'text-gray-400 hover:text-gray-200'
+                    }`}
+                  >
+                    Gunakan Kode Akses
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => { setTab('token'); setError(null); setSuccess(null); }}
+                    className={`flex-1 py-2 rounded-lg font-bold transition-all duration-300 ${
+                      tab === 'token'
+                        ? 'bg-tokyo-pond text-[#0b0f19] shadow-pond'
+                        : 'text-gray-400 hover:text-gray-200'
+                    }`}
+                  >
+                    Gunakan Kode Akses
+                  </button>
+                  <button
+                    onClick={() => { setTab('setup'); setError(null); setSuccess(null); }}
+                    className={`flex-1 py-2 rounded-lg font-bold transition-all duration-300 ${
+                      tab === 'setup'
+                        ? 'bg-tokyo-torii text-tokyo-darkText shadow-torii'
+                        : 'text-gray-400 hover:text-gray-200'
+                    }`}
+                  >
+                    Inisialisasi Master
+                  </button>
+                </>
+              )}
             </div>
-          ) : (
-            /* Normal Login/Token Tabs */
-            <div className="space-y-5 relative z-10">
-              {/* Tab toggles */}
-              <div className="flex bg-gray-950/50 p-1 rounded-xl border border-gray-800 text-xs">
-                <button
-                  onClick={() => { setTab('login'); setError(null); }}
-                  className={`flex-1 py-2 rounded-lg font-bold transition-all duration-300 ${
-                    tab === 'login'
-                      ? 'bg-tokyo-sakura text-tokyo-darkText shadow-sakura'
-                      : 'text-gray-400 hover:text-gray-200'
-                  }`}
-                >
-                  Masuk Akun
-                </button>
-                <button
-                  onClick={() => { setTab('token'); setError(null); }}
-                  className={`flex-1 py-2 rounded-lg font-bold transition-all duration-300 ${
-                    tab === 'token'
-                      ? 'bg-tokyo-pond text-[#0b0f19] shadow-pond'
-                      : 'text-gray-400 hover:text-gray-200'
-                  }`}
-                >
-                  Gunakan Kode Akses
-                </button>
+
+            {/* Error and Success alerts */}
+            {error && (
+              <div className="p-3 rounded-xl bg-tokyo-torii/10 border border-tokyo-torii/30 text-tokyo-torii text-xs flex items-center gap-2">
+                <AlertCircle size={14} className="shrink-0" />
+                <span>{error}</span>
               </div>
+            )}
+            {success && (
+              <div className="p-3 rounded-xl bg-tokyo-bamboo/10 border border-tokyo-bamboo/30 text-tokyo-bamboo text-xs flex items-center gap-2">
+                <Check size={14} className="shrink-0" />
+                <span>{success}</span>
+              </div>
+            )}
 
-              {/* Error and Success alerts */}
-              {error && (
-                <div className="p-3 rounded-xl bg-tokyo-torii/10 border border-tokyo-torii/30 text-tokyo-torii text-xs flex items-center gap-2">
-                  <AlertCircle size={14} className="shrink-0" />
-                  <span>{error}</span>
-                </div>
-              )}
-              {success && (
-                <div className="p-3 rounded-xl bg-tokyo-bamboo/10 border border-tokyo-bamboo/30 text-tokyo-bamboo text-xs flex items-center gap-2">
-                  <Check size={14} className="shrink-0" />
-                  <span>{success}</span>
-                </div>
-              )}
-
-              {/* Tab: Standard Login Form */}
-              <AnimatePresence mode="wait">
-                {tab === 'login' ? (
-                  <motion.form
-                    key="login-form"
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 10 }}
-                    transition={{ duration: 0.2 }}
-                    onSubmit={handleLogin}
-                    className="space-y-4"
-                  >
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block">Username</label>
-                      <div className="relative">
-                        <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-500">
-                          <User size={15} />
-                        </span>
-                        <input
-                          type="text"
-                          value={username}
-                          onChange={(e) => setUsername(e.target.value)}
-                          placeholder="Masukkan username..."
-                          className="w-full pl-10 pr-4 py-3 rounded-xl bg-gray-950/45 border border-gray-800 text-sm text-tokyo-darkText placeholder-gray-600 focus:outline-none focus:border-tokyo-sakura transition-colors"
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block">Password</label>
-                      <div className="relative">
-                        <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-500">
-                          <Lock size={15} />
-                        </span>
-                        <input
-                          type={showPassword ? "text" : "password"}
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          placeholder="Masukkan password..."
-                          className="w-full pl-10 pr-10 py-3 rounded-xl bg-gray-950/45 border border-gray-800 text-sm text-tokyo-darkText placeholder-gray-600 focus:outline-none focus:border-tokyo-sakura transition-colors"
-                          required
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-500 hover:text-gray-300"
-                        >
-                          {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
-                        </button>
-                      </div>
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={loading}
-                      className="w-full py-3 rounded-xl bg-gradient-to-r from-tokyo-sakura to-tokyo-torii text-tokyo-darkText text-sm font-extrabold shadow-lg hover:shadow-sakura/30 transition-all active:scale-[0.98]"
-                    >
-                      {loading ? 'Masuk Sesi...' : 'Masuk Sesi Belajar ✓'}
-                    </button>
-                  </motion.form>
-                ) : (
-                  /* Tab: Import Token Form */
-                  <motion.form
-                    key="token-form"
-                    initial={{ opacity: 0, x: 10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -10 }}
-                    transition={{ duration: 0.2 }}
-                    onSubmit={handleRegisterWithToken}
-                    className="space-y-4"
-                  >
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block flex items-center gap-1">
-                        <KeyRound size={12} className="text-tokyo-pond" />
-                        Kode Akses Kriptografis
-                      </label>
-                      <textarea
-                        value={tokenInput}
-                        onChange={(e) => setTokenInput(e.target.value)}
-                        rows={4}
-                        placeholder="Tempelkan Kode Akses panjang (Base64) yang diberikan oleh Master di sini..."
-                        className="w-full p-3.5 rounded-xl bg-gray-950/45 border border-gray-800 text-xs text-tokyo-darkText placeholder-gray-600 focus:outline-none focus:border-tokyo-pond transition-colors resize-none font-mono"
+            {/* Forms rendering */}
+            <AnimatePresence mode="wait">
+              {tab === 'login' && hasMaster && (
+                <motion.form
+                  key="login-form"
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 10 }}
+                  transition={{ duration: 0.2 }}
+                  onSubmit={handleLogin}
+                  className="space-y-4"
+                >
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block">Username</label>
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-500">
+                        <User size={15} />
+                      </span>
+                      <input
+                        type="text"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        placeholder="Masukkan username..."
+                        className="w-full pl-10 pr-4 py-3 rounded-xl bg-gray-950/45 border border-gray-800 text-sm text-tokyo-darkText placeholder-gray-600 focus:outline-none focus:border-tokyo-sakura transition-colors"
                         required
                       />
                     </div>
+                  </div>
 
-                    <div className="p-3 rounded-xl bg-gray-950/30 border border-gray-800/80 text-[10px] text-gray-400 leading-relaxed flex items-start gap-2.5">
-                      <HelpCircle size={14} className="text-tokyo-pond shrink-0 mt-0.5 animate-pulse" />
-                      <span>
-                        <strong>Tentang Kode Akses:</strong> Kode ini dienkripsi secara lokal oleh Master Akses. Menempelkannya di sini akan mendaftarkan profil Anda secara lokal di browser ini agar Anda dapat langsung belajar menggunakan username Anda.
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block">Password</label>
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-500">
+                        <Lock size={15} />
                       </span>
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Masukkan password..."
+                        className="w-full pl-10 pr-10 py-3 rounded-xl bg-gray-950/45 border border-gray-800 text-sm text-tokyo-darkText placeholder-gray-600 focus:outline-none focus:border-tokyo-sakura transition-colors"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-500 hover:text-gray-300"
+                      >
+                        {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                      </button>
                     </div>
+                  </div>
 
-                    <button
-                      type="submit"
-                      disabled={loading}
-                      className="w-full py-3 rounded-xl bg-gradient-to-r from-tokyo-pond to-blue-500 text-[#0b0f19] text-sm font-extrabold shadow-lg hover:shadow-pond/30 transition-all active:scale-[0.98]"
-                    >
-                      {loading ? 'Memvalidasi...' : 'Daftar & Masuk Instan ✓'}
-                    </button>
-                  </motion.form>
-                )}
-              </AnimatePresence>
-            </div>
-          )}
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full py-3 rounded-xl bg-gradient-to-r from-tokyo-sakura to-tokyo-torii text-tokyo-darkText text-sm font-extrabold shadow-lg hover:shadow-sakura/30 transition-all active:scale-[0.98]"
+                  >
+                    {loading ? 'Masuk Sesi...' : 'Masuk Sesi Belajar ✓'}
+                  </button>
+                </motion.form>
+              )}
+
+              {tab === 'token' && (
+                <motion.form
+                  key="token-form"
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -10 }}
+                  transition={{ duration: 0.2 }}
+                  onSubmit={handleRegisterWithToken}
+                  className="space-y-4"
+                >
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block flex items-center gap-1">
+                      <KeyRound size={12} className="text-tokyo-pond" />
+                      Kode Akses Kriptografis
+                    </label>
+                    <textarea
+                      value={tokenInput}
+                      onChange={(e) => setTokenInput(e.target.value)}
+                      rows={4}
+                      placeholder="Tempelkan Kode Akses panjang (Base64) yang diberikan oleh Master di sini..."
+                      className="w-full p-3.5 rounded-xl bg-gray-950/45 border border-gray-800 text-xs text-tokyo-darkText placeholder-gray-600 focus:outline-none focus:border-tokyo-pond transition-colors resize-none font-mono"
+                      required
+                    />
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-gray-950/30 border border-gray-800/80 text-[10px] text-gray-400 leading-relaxed flex items-start gap-2.5">
+                    <HelpCircle size={14} className="text-tokyo-pond shrink-0 mt-0.5 animate-pulse" />
+                    <span>
+                      <strong>Tentang Kode Akses:</strong> Kode ini dienkripsi secara lokal oleh Master Akses. Menempelkannya di sini akan mendaftarkan profil Anda secara lokal di browser ini agar Anda dapat langsung belajar menggunakan username Anda.
+                    </span>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full py-3 rounded-xl bg-gradient-to-r from-tokyo-pond to-blue-500 text-[#0b0f19] text-sm font-extrabold shadow-lg hover:shadow-pond/30 transition-all active:scale-[0.98]"
+                  >
+                    {loading ? 'Memvalidasi...' : 'Daftar & Masuk Instan ✓'}
+                  </button>
+                </motion.form>
+              )}
+
+              {tab === 'setup' && !hasMaster && (
+                <motion.form
+                  key="setup-form"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  onSubmit={handleRegisterMaster}
+                  className="space-y-4"
+                >
+                  <div className="text-center space-y-1.5 pb-1">
+                    <div className="mx-auto w-10 h-10 rounded-2xl bg-tokyo-torii/15 border border-tokyo-torii/30 flex items-center justify-center text-tokyo-torii text-xl">
+                      <Shield size={20} />
+                    </div>
+                    <h2 className="text-sm font-extrabold text-tokyo-darkText">Inisialisasi Master Akun</h2>
+                    <p className="text-[10px] text-gray-400 px-4">
+                      Tentukan password master untuk perangkat ini agar Anda dapat mengelola akses pembeli di kemudian hari.
+                    </p>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block">Password Master Baru</label>
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-500">
+                        <Lock size={15} />
+                      </span>
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        value={masterPassword}
+                        onChange={(e) => setMasterPassword(e.target.value)}
+                        placeholder="Minimal 6 karakter..."
+                        className="w-full pl-10 pr-10 py-3 rounded-xl bg-gray-950/45 border border-gray-800 text-sm text-tokyo-darkText placeholder-gray-600 focus:outline-none focus:border-tokyo-torii transition-colors"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-500 hover:text-gray-300"
+                      >
+                        {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block">Konfirmasi Password Master</label>
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-500">
+                        <Lock size={15} />
+                      </span>
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        value={confirmMasterPassword}
+                        onChange={(e) => setConfirmMasterPassword(e.target.value)}
+                        placeholder="Ulangi password..."
+                        className="w-full pl-10 pr-10 py-3 rounded-xl bg-gray-950/45 border border-gray-800 text-sm text-tokyo-darkText placeholder-gray-600 focus:outline-none focus:border-tokyo-torii transition-colors"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full py-3 rounded-xl bg-gradient-to-r from-tokyo-torii to-tokyo-sakura text-tokyo-darkText text-sm font-extrabold shadow-lg hover:shadow-torii/40 transition-all active:scale-[0.98]"
+                  >
+                    {loading ? 'Menyimpan...' : 'Aktifkan Akses Master ✓'}
+                  </button>
+                </motion.form>
+              )}
+            </AnimatePresence>
+          </div>
         </motion.div>
 
         {/* Small footer text */}

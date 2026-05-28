@@ -51,7 +51,8 @@ export async function generateAccessToken(
   
   const tokenObj = {
     payload: payloadStr,
-    signature: rawSignature
+    signature: rawSignature,
+    s: secret // Simpan secret di dalam token agar bisa diadopsi perangkat baru
   };
   
   // Encode ke base64 secara aman (mensuport karakter unicode)
@@ -63,25 +64,29 @@ export async function generateAccessToken(
  */
 export async function verifyAccessToken(
   token: string,
-  secret: string
-): Promise<{ username: string; passwordHash: string; role: 'master' | 'user' } | null> {
+  defaultSecret: string
+): Promise<{ username: string; passwordHash: string; role: 'master' | 'user'; masterSecret?: string } | null> {
   try {
     const decodedStr = decodeURIComponent(escape(atob(token.trim())));
     const tokenObj = JSON.parse(decodedStr);
     
     if (!tokenObj.payload || !tokenObj.signature) return null;
     
-    // Verifikasi tanda tangan digital dengan secret yang ada
-    const expectedSignature = await hashPassword(tokenObj.payload + secret);
+    // Gunakan secret dari token jika ada, sebagai fallback jika defaultSecret berbeda (perangkat baru)
+    const activeSecret = tokenObj.s || defaultSecret;
+    
+    // Verifikasi tanda tangan digital dengan secret yang aktif
+    const expectedSignature = await hashPassword(tokenObj.payload + activeSecret);
     if (expectedSignature !== tokenObj.signature) {
-      return null; // Tanda tangan tidak valid (secret tidak cocok atau data dimanipulasi)
+      return null; // Tanda tangan tidak valid
     }
     
     const payload = JSON.parse(tokenObj.payload);
     return {
       username: payload.u,
       passwordHash: payload.p,
-      role: payload.r
+      role: payload.r,
+      masterSecret: tokenObj.s
     };
   } catch (e) {
     console.error("Verifikasi token gagal:", e);

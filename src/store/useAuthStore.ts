@@ -194,6 +194,11 @@ export const useAuthStore = create<AuthStore>()(
           return { success: false, error: 'Kode Akses tidak valid atau telah dimodifikasi.' };
         }
 
+        // Jika registry kosong (perangkat baru/pembeli), adopsi masterSecret dari token!
+        if (usersRegistry.length === 0 && decoded.masterSecret) {
+          set({ masterSecret: decoded.masterSecret });
+        }
+
         const exists = usersRegistry.some(u => u.username === decoded.username);
         let updatedRegistry = [...usersRegistry];
         
