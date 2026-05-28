@@ -19,6 +19,10 @@ export default function LoginView() {
   const hasMaster = usersRegistry.some(u => u.role === 'master');
   const [tab, setTab] = useState<'login' | 'token' | 'setup'>('token');
   
+  // Secret knock states (to hide Master Initialization from buyers)
+  const [logoClicks, setLogoClicks] = useState(0);
+  const [showMasterSetupTab, setShowMasterSetupTab] = useState(false);
+  
   // Form states
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -38,6 +42,28 @@ export default function LoginView() {
   useEffect(() => {
     initializeAuth();
   }, []);
+
+  // Reset logo clicks after 2 seconds of inactivity
+  useEffect(() => {
+    if (logoClicks > 0) {
+      const t = setTimeout(() => setLogoClicks(0), 2005);
+      return () => clearTimeout(t);
+    }
+  }, [logoClicks]);
+
+  const handleLogoClick = () => {
+    if (hasMaster) return;
+    setLogoClicks(prev => {
+      const next = prev + 1;
+      if (next >= 5) {
+        setShowMasterSetupTab(true);
+        setTab('setup');
+        triggerConfetti();
+        return 0;
+      }
+      return next;
+    });
+  };
 
   // Sync tab based on whether master account exists
   useEffect(() => {
@@ -161,7 +187,8 @@ export default function LoginView() {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="text-4xl font-extrabold tracking-tight text-tokyo-darkText flex items-center justify-center gap-3 drop-shadow-md"
+            onClick={handleLogoClick}
+            className="text-4xl font-extrabold tracking-tight text-tokyo-darkText flex items-center justify-center gap-3 drop-shadow-md cursor-default select-none"
           >
             KanjiZen <span className="text-lg font-normal text-gray-500 font-kanji bg-gray-900/60 px-2 py-0.5 rounded border border-gray-800">漢字禅</span>
           </motion.h1>
@@ -217,16 +244,18 @@ export default function LoginView() {
                   >
                     Gunakan Kode Akses
                   </button>
-                  <button
-                    onClick={() => { setTab('setup'); setError(null); setSuccess(null); }}
-                    className={`flex-1 py-2 rounded-lg font-bold transition-all duration-300 ${
-                      tab === 'setup'
-                        ? 'bg-tokyo-torii text-tokyo-darkText shadow-torii'
-                        : 'text-gray-400 hover:text-gray-200'
-                    }`}
-                  >
-                    Inisialisasi Master
-                  </button>
+                  {showMasterSetupTab && (
+                    <button
+                      onClick={() => { setTab('setup'); setError(null); setSuccess(null); }}
+                      className={`flex-1 py-2 rounded-lg font-bold transition-all duration-300 ${
+                        tab === 'setup'
+                          ? 'bg-tokyo-torii text-tokyo-darkText shadow-torii'
+                          : 'text-gray-400 hover:text-gray-200'
+                      }`}
+                    >
+                      Inisialisasi Master
+                    </button>
+                  )}
                 </>
               )}
             </div>
@@ -350,7 +379,7 @@ export default function LoginView() {
                 </motion.form>
               )}
 
-              {tab === 'setup' && !hasMaster && (
+              {tab === 'setup' && !hasMaster && showMasterSetupTab && (
                 <motion.form
                   key="setup-form"
                   initial={{ opacity: 0, y: 10 }}
