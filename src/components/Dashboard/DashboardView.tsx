@@ -7,7 +7,7 @@ import Heatmap from './Heatmap';
 import AdminPanel from './AdminPanel';
 
 interface DashboardViewProps {
-  onStartMode: (mode: 'flashcard' | 'quiz' | 'writing' | 'speed' | 'confusion', level: 'N5' | 'N4' | 'ALL') => void;
+  onStartMode: (mode: 'flashcard' | 'quiz' | 'writing' | 'speed' | 'confusion' | 'dictionary' | 'jlpt-exam', level: 'N5' | 'N4' | 'ALL') => void;
   darkMode: boolean;
   setDarkMode: (val: boolean) => void;
 }
@@ -582,6 +582,40 @@ export default function DashboardView({ onStartMode, darkMode, setDarkMode }: Da
                     </div>
                   </div>
                   <Play size={12} className="text-gray-600 group-hover:text-tokyo-torii group-hover:translate-x-0.5 transition-all" />
+                </button>
+
+                {/* Kanji Dictionary portal */}
+                <button
+                  onClick={() => onStartMode('dictionary', selectedLevelFilter)}
+                  className="w-full p-3 rounded-2xl border border-gray-800 hover:border-tokyo-sakura bg-gray-950/20 hover:bg-tokyo-sakura/5 text-left transition-all duration-300 flex items-center justify-between group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-xl bg-tokyo-sakura/10 text-tokyo-sakura">
+                      <Book size={16} />
+                    </div>
+                    <div>
+                      <span className="text-xs font-bold text-tokyo-darkText block">Kamus Kanji Zen 📖</span>
+                      <span className="text-[10px] text-gray-500 block">Jelajahi Kanji per Topik & Detail Modal</span>
+                    </div>
+                  </div>
+                  <Play size={12} className="text-gray-600 group-hover:text-tokyo-sakura group-hover:translate-x-0.5 transition-all" />
+                </button>
+
+                {/* JLPT Mock Exam portal */}
+                <button
+                  onClick={() => onStartMode('jlpt-exam', selectedLevelFilter)}
+                  className="w-full p-3 rounded-2xl border border-gray-800 hover:border-tokyo-pond bg-gray-950/20 hover:bg-tokyo-pond/5 text-left transition-all duration-300 flex items-center justify-between group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-xl bg-tokyo-pond/10 text-tokyo-pond">
+                      <Award size={16} />
+                    </div>
+                    <div>
+                      <span className="text-xs font-bold text-tokyo-darkText block">Simulasi Ujian JLPT ⏱️</span>
+                      <span className="text-[10px] text-gray-500 block">20 Soal Formal Terbatas Waktu 15 Menit</span>
+                    </div>
+                  </div>
+                  <Play size={12} className="text-gray-600 group-hover:text-tokyo-pond group-hover:translate-x-0.5 transition-all" />
                 </button>
               </div>
 

@@ -30,6 +30,7 @@ function getStartCoords(pathStr: string): Coord | null {
 
 export default function WritingView({ onBackToDashboard, selectedLevel }: WritingViewProps) {
   const reviewCard = useKanjiStore(state => state.reviewCard);
+  const updateKanjiStrokes = useKanjiStore(state => state.updateKanjiStrokes);
   const dailyQuests = useKanjiStore(state => state.dailyQuests);
   const audio = useAudio();
 
@@ -45,9 +46,63 @@ export default function WritingView({ onBackToDashboard, selectedLevel }: Writin
   const [evaluationStage, setEvaluationStage] = useState(false);
   const [sessionCompleted, setSessionCompleted] = useState(false);
   
+  // Dynamic fetch state
+  const [loadingStrokes, setLoadingStrokes] = useState(false);
+  
   // Stroke animation playback state
   const [animatingStrokeIdx, setAnimatingStrokeIdx] = useState<number>(-1);
   const [isAnimating, setIsAnimating] = useState(false);
+
+  // Load strokes on demand for the active card if they are empty
+  useEffect(() => {
+    const activeCard = queue[currentIdx];
+    if (!activeCard || sessionCompleted) return;
+
+    if (!activeCard.strokes || activeCard.strokes.length === 0) {
+      setLoadingStrokes(true);
+      const codePoint = activeCard.character.codePointAt(0);
+      if (codePoint) {
+        const hex = codePoint.toString(16).toLowerCase().padStart(5, '0');
+        const url = `https://raw.githubusercontent.com/KanjiVG/kanjivg/master/kanji/${hex}.svg`;
+
+        fetch(url)
+          .then(res => {
+            if (!res.ok) throw new Error('Fail to fetch SVG');
+            return res.text();
+          })
+          .then(svgText => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(svgText, 'image/svg+xml');
+            const paths = Array.from(doc.querySelectorAll('path'))
+              .map(path => path.getAttribute('d') || '')
+              .filter(d => d.length > 0);
+
+            if (paths.length > 0) {
+              // Update state locally and in store
+              updateKanjiStrokes(activeCard.character, paths);
+              
+              // Also update in our local queue
+              setQueue(prevQueue => {
+                const newQueue = [...prevQueue];
+                if (newQueue[currentIdx]) {
+                  newQueue[currentIdx] = {
+                    ...newQueue[currentIdx],
+                    strokes: paths
+                  };
+                }
+                return newQueue;
+              });
+            }
+          })
+          .catch(err => {
+            console.error('Error fetching strokes from KanjiVG:', err);
+          })
+          .finally(() => {
+            setLoadingStrokes(false);
+          });
+      }
+    }
+  }, [currentIdx, queue.length, sessionCompleted]);
 
   // Drawing Canvas references
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -334,7 +389,7 @@ export default function WritingView({ onBackToDashboard, selectedLevel }: Writin
                     Latihlah Goresan Kanji: "{activeCard.character}"
                   </h3>
                   <p className="text-xs text-gray-500 uppercase tracking-widest font-semibold flex items-center justify-center gap-1">
-                    Arti: <span className="text-tokyo-sakura">{activeCard.meaning}</span> {hasStrokes ? `| Goresan: ${activeCard.strokes.length}` : ''}
+                    Arti: <span className="text-tokyo-sakura">{activeCard.meaning}</span> {loadingStrokes ? ' | ⏳ Memuat Goresan...' : hasStrokes ? `| Goresan: ${activeCard.strokes.length}` : ''}
                   </p>
                 </div>
 

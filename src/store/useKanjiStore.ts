@@ -64,6 +64,7 @@ interface KanjiStore {
   exportProgress: () => string;
   importProgress: (jsonString: string) => boolean;
   resetDatabase: () => void;
+  updateKanjiStrokes: (character: string, strokes: string[]) => void;
 
   // Multi-user Actions
   switchUserProgress: (username: string) => void;
@@ -325,6 +326,18 @@ export const useKanjiStore = create<KanjiStore>()(
             [key]: (confusionCounts[key] || 0) + 1
           }
         });
+      },
+
+      updateKanjiStrokes: (character, strokes) => {
+        const { kanjiList } = get();
+        const updatedList = kanjiList.map(c => {
+          if (c.character === character) {
+            return { ...c, strokes };
+          }
+          return c;
+        });
+        set({ kanjiList: updatedList });
+        get().saveProgress();
       },
 
       recoverLeech: (id) => {

@@ -7,6 +7,8 @@ import QuizView from './components/Learning/QuizView';
 import WritingView from './components/Learning/WritingView';
 import SpeedView from './components/Learning/SpeedView';
 import ConfusionView from './components/Learning/ConfusionView';
+import KanjiListView from './components/Learning/KanjiListView';
+import JLPTExamView from './components/Learning/JLPTExamView';
 import LoginView from './components/Dashboard/LoginView';
 
 export default function App() {
@@ -18,7 +20,7 @@ export default function App() {
   const currentUser = useAuthStore(state => state.currentUser);
   const initializeAuth = useAuthStore(state => state.initializeAuth);
   
-  const [activeView, setActiveView] = useState<'dashboard' | 'flashcard' | 'quiz' | 'writing' | 'speed' | 'confusion'>('dashboard');
+  const [activeView, setActiveView] = useState<'dashboard' | 'flashcard' | 'quiz' | 'writing' | 'speed' | 'confusion' | 'dictionary' | 'jlpt-exam'>('dashboard');
   const [selectedLevelFilter, setSelectedLevelFilter] = useState<'N5' | 'N4' | 'ALL'>('ALL');
   
   // Theme dark mode state
@@ -62,7 +64,7 @@ export default function App() {
     return () => clearInterval(timer);
   }, [currentUser]);
 
-  const handleStartMode = (mode: 'flashcard' | 'quiz' | 'writing' | 'speed' | 'confusion', level: 'N5' | 'N4' | 'ALL') => {
+  const handleStartMode = (mode: 'flashcard' | 'quiz' | 'writing' | 'speed' | 'confusion' | 'dictionary' | 'jlpt-exam', level: 'N5' | 'N4' | 'ALL') => {
     setSelectedLevelFilter(level);
     setActiveView(mode);
   };
@@ -133,6 +135,20 @@ export default function App() {
 
         {activeView === 'confusion' && (
           <ConfusionView
+            onBackToDashboard={() => setActiveView('dashboard')}
+          />
+        )}
+
+        {activeView === 'dictionary' && (
+          <KanjiListView
+            selectedLevel={selectedLevelFilter}
+            onBackToDashboard={() => setActiveView('dashboard')}
+          />
+        )}
+
+        {activeView === 'jlpt-exam' && (
+          <JLPTExamView
+            selectedLevel={selectedLevelFilter}
             onBackToDashboard={() => setActiveView('dashboard')}
           />
         )}
