@@ -136,3 +136,26 @@ export async function verifyAccessToken(
     return null;
   }
 }
+
+/**
+ * Mendeteksi nama peramban (browser) dan sistem operasi (OS) berdasarkan user agent
+ */
+export function getDeviceName(): string {
+  const ua = navigator.userAgent;
+  let os = "Perangkat Tidak Dikenal";
+  
+  if (ua.indexOf("Win") !== -1) os = "Windows";
+  else if (ua.indexOf("Mac") !== -1) os = "macOS";
+  else if (ua.indexOf("Linux") !== -1) os = "Linux";
+  else if (/Android/.test(ua)) os = "Android";
+  else if (/iPhone|iPad|iPod/.test(ua)) os = "iOS";
+  
+  let browser = "Peramban";
+  if (ua.indexOf("Chrome") !== -1 && ua.indexOf("Edg") === -1) browser = "Chrome";
+  else if (ua.indexOf("Safari") !== -1 && ua.indexOf("Chrome") === -1) browser = "Safari";
+  else if (ua.indexOf("Firefox") !== -1) browser = "Firefox";
+  else if (ua.indexOf("Edg") !== -1) browser = "Edge";
+  
+  return `${os} (${browser})`;
+}
+

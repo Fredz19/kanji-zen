@@ -11,7 +11,9 @@ export default function AdminPanel() {
     createUser, 
     deleteUser, 
     changeMasterPassword,
-    generateTokenForUser
+    generateTokenForUser,
+    removeUserDevice,
+    deviceId
   } = useAuthStore();
 
   const { userProgressMap } = useKanjiStore();
@@ -338,6 +340,7 @@ export default function AdminPanel() {
                   <th className="pb-3 pr-4">Username</th>
                   <th className="pb-3 pr-4">Tanggal Dibuat</th>
                   <th className="pb-3 pr-4">Progress XP</th>
+                  <th className="pb-3 pr-4">Perangkat Terdaftar (Maks. 2)</th>
                   <th className="pb-3 text-right">Aksi</th>
                 </tr>
               </thead>
@@ -347,6 +350,7 @@ export default function AdminPanel() {
                   const progress = userProgressMap[user.username];
                   const userXP = progress ? progress.xp : 0;
                   const userLv = progress ? progress.level : 1;
+                  const devices = user.devices || [];
                   
                   return (
                     <tr key={user.username} className="hover:bg-gray-900/10 transition-colors">
@@ -362,6 +366,46 @@ export default function AdminPanel() {
                         <span className="px-2 py-0.5 rounded bg-tokyo-pond/10 border border-tokyo-pond/20 text-tokyo-pond text-[10px]">
                           Lv.{userLv} ({userXP} XP)
                         </span>
+                      </td>
+                      <td className="py-3.5">
+                        {devices.length === 0 ? (
+                          <span className="text-gray-600 italic text-[11px]">Belum ada perangkat</span>
+                        ) : (
+                          <div className="flex flex-wrap gap-1.5 py-1">
+                            {devices.map(d => {
+                              const isCurrent = d.id === deviceId;
+                              return (
+                                <span 
+                                  key={d.id} 
+                                  className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-[10px] transition-all hover:bg-gray-900 ${
+                                    isCurrent 
+                                      ? 'bg-tokyo-sakura/15 border border-tokyo-sakura/30 text-tokyo-sakura font-semibold shadow-[0_0_8px_rgba(246,135,179,0.1)]' 
+                                      : 'bg-gray-950/60 border border-gray-800 text-gray-400'
+                                  }`}
+                                  title={`Terdaftar: ${new Date(d.registeredAt).toLocaleString('id-ID')}`}
+                                >
+                                  <span>{d.name}</span>
+                                  {isCurrent && (
+                                    <span className="text-[8px] bg-tokyo-sakura text-[#0b0f19] px-1 py-0.2 rounded font-black tracking-wide">
+                                      INI
+                                    </span>
+                                  )}
+                                  <button
+                                    onClick={() => {
+                                      if (confirm(`Apakah Anda yakin ingin menghapus pendaftaran perangkat "${d.name}" untuk pengguna "${user.username}"?`)) {
+                                        removeUserDevice(user.username, d.id);
+                                      }
+                                    }}
+                                    className="ml-1 text-gray-500 hover:text-tokyo-torii transition-colors font-bold text-xs leading-none"
+                                    title="Hapus Perangkat"
+                                  >
+                                    ×
+                                  </button>
+                                </span>
+                              );
+                            })}
+                          </div>
+                        )}
                       </td>
                       <td className="py-3.5 text-right flex items-center justify-end gap-2.5">
                         {/* Copy Access Token */}
