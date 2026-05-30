@@ -1,21 +1,71 @@
 import { useCallback } from 'react';
 
-export function useAudio() {
-  const getAudioContext = (): AudioContext | null => {
+// Singleton shared AudioContext untuk menghindari penumpukan instansi aktif di browser (terutama di HP)
+let globalAudioCtx: AudioContext | null = null;
+
+const getSharedAudioContext = (): AudioContext | null => {
+  if (typeof window === 'undefined') return null;
+  
+  if (!globalAudioCtx) {
     try {
       const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-      return new AudioCtx();
+      globalAudioCtx = new AudioCtx();
     } catch (e) {
       console.warn('Web Audio API is not supported in this browser.');
       return null;
     }
-  };
+  }
+  
+  // Lanjutkan AudioContext jika sedang tersuspensi (sering terjadi di HP sebelum ada interaksi)
+  if (globalAudioCtx && globalAudioCtx.state === 'suspended') {
+    globalAudioCtx.resume().catch(e => console.warn('Gagal melanjutkan AudioContext:', e));
+  }
+  
+  return globalAudioCtx;
+};
 
+// Fungsi bypass otomatis Autoplay Policy di HP (iOS & Android)
+// Berfungsi membuka blokir audio efek dan text-to-speech pada sentuhan/klik pertama pengguna
+const unlockAudioAndSpeech = () => {
+  const ctx = getSharedAudioContext();
+  if (ctx && ctx.state === 'suspended') {
+    ctx.resume().then(() => {
+      cleanupListeners();
+    }).catch(e => console.warn('Gagal membuka kunci AudioContext:', e));
+  } else if (ctx) {
+    cleanupListeners();
+  }
+
+  // Buka kunci Speech Synthesis (Text-To-Speech) pada perangkat seluler (terutama iOS Safari)
+  if (typeof window !== 'undefined' && window.speechSynthesis) {
+    try {
+      const silentUtterance = new SpeechSynthesisUtterance('');
+      silentUtterance.volume = 0;
+      window.speechSynthesis.speak(silentUtterance);
+    } catch (e) {
+      console.warn('Gagal memicu ucapan kosong untuk Speech Synthesis:', e);
+    }
+  }
+};
+
+const cleanupListeners = () => {
+  if (typeof window === 'undefined') return;
+  window.removeEventListener('click', unlockAudioAndSpeech);
+  window.removeEventListener('touchstart', unlockAudioAndSpeech);
+};
+
+// Pasang pendengar peristiwa global pada dokumen untuk melepaskan batasan autoplay HP
+if (typeof window !== 'undefined') {
+  window.addEventListener('click', unlockAudioAndSpeech, { passive: true });
+  window.addEventListener('touchstart', unlockAudioAndSpeech, { passive: true });
+}
+
+export function useAudio() {
   /**
    * Play a clean, pleasant double chime (sine wave) for correct answers
    */
   const playSuccess = useCallback(() => {
-    const ctx = getAudioContext();
+    const ctx = getSharedAudioContext();
     if (!ctx) return;
 
     const now = ctx.currentTime;
@@ -55,7 +105,7 @@ export function useAudio() {
    * Play a low buzz sound for forgotten/incorrect answers
    */
   const playFailure = useCallback(() => {
-    const ctx = getAudioContext();
+    const ctx = getSharedAudioContext();
     if (!ctx) return;
 
     const now = ctx.currentTime;
@@ -88,7 +138,7 @@ export function useAudio() {
    * Play an ascending multi-tone arpeggio for high combos
    */
   const playCombo = useCallback((comboCount: number = 1) => {
-    const ctx = getAudioContext();
+    const ctx = getSharedAudioContext();
     if (!ctx) return;
 
     const now = ctx.currentTime;
@@ -127,7 +177,7 @@ export function useAudio() {
    * Play an epic game fanfare for Level-Up screens
    */
   const playLevelUp = useCallback(() => {
-    const ctx = getAudioContext();
+    const ctx = getSharedAudioContext();
     if (!ctx) return;
 
     const now = ctx.currentTime;
