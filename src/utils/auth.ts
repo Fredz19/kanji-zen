@@ -32,7 +32,8 @@ export function generateRandomPassword(): string {
 
 /**
  * Menghasilkan token akses singkat bertanda tangan digital (signed token)
- * Menggunakan hash pendek untuk meminimalkan panjang token yang dibagikan.
+ * Format baru: "username-hashSig" (Maksimal 20 karakter)
+ * Contoh: "erik-392657eb" di mana "392657eb" adalah potongan password hash + signature
  */
 export async function generateAccessToken(
   username: string,
@@ -40,42 +41,68 @@ export async function generateAccessToken(
   role: 'master' | 'user',
   secret: string
 ): Promise<string> {
-  // Hanya simpan 16 char pertama dari hash untuk mempersingkat token
-  const shortHash = passwordHash.slice(0, 16);
-  const shortSecret = secret.slice(0, 12);
-
-  const payload = {
-    u: username.trim().toLowerCase(),
-    p: shortHash,
-    r: role === 'user' ? 'u' : 'm', // Persingkat: 'user'→'u', 'master'→'m'
-  };
-  const payloadStr = JSON.stringify(payload);
-
-  // Signature: hash (payload+secret) → ambil 16 char pertama saja
-  const fullSig = await hashPassword(payloadStr + secret);
-  const shortSig = fullSig.slice(0, 16);
-
-  const tokenObj = {
-    d: payloadStr,  // 'd' singkatan dari data (lebih pendek dari 'payload')
-    g: shortSig,    // 'g' singkatan dari signature
-    s: shortSecret  // secret pendek untuk adopsi di perangkat baru
-  };
-
-  return btoa(unescape(encodeURIComponent(JSON.stringify(tokenObj))));
+  const normUser = username.trim().toLowerCase();
+  
+  // Ambil 8 karakter pertama dari passwordHash (32-bit entropy)
+  const shortHash = passwordHash.slice(0, 8);
+  
+  // Gunakan secret global untuk token baru agar bisa diverifikasi instan di perangkat lain
+  const globalSecret = "kanjizen-secure-offline-token-key-2026";
+  const payloadStr = `${normUser}:${shortHash}`;
+  
+  // Tanda tangan signature pendek (4 karakter = 16-bit)
+  const fullSig = await hashPassword(payloadStr + globalSecret);
+  const shortSig = fullSig.slice(0, 4);
+  
+  // Return format baru yang sangat pendek: username-hashSig
+  return `${normUser}-${shortHash}${shortSig}`;
 }
 
 /**
- * Memverifikasi token akses (format pendek) dan mengembalikan payload jika valid
+ * Memverifikasi token akses (format pendek/baru maupun format lama/base64)
  */
 export async function verifyAccessToken(
   token: string,
   defaultSecret: string
 ): Promise<{ username: string; passwordHash: string; role: 'master' | 'user'; masterSecret?: string } | null> {
   try {
-    const decodedStr = decodeURIComponent(escape(atob(token.trim())));
+    const trimmedToken = token.trim();
+    
+    // Deteksi Format Baru Pendek (username-hashSig, panjang total <= 25)
+    if (trimmedToken.includes('-') && !trimmedToken.startsWith('ey')) {
+      const parts = trimmedToken.split('-');
+      if (parts.length !== 2) return null;
+      
+      const username = parts[0].toLowerCase();
+      const hashSig = parts[1];
+      if (hashSig.length !== 12) return null; // 8 char hash + 4 char sig
+      
+      const passwordHashPart = hashSig.slice(0, 8);
+      const sigInToken = hashSig.slice(8, 12);
+      
+      // Verifikasi signature menggunakan secret global
+      const globalSecret = "kanjizen-secure-offline-token-key-2026";
+      const payloadStr = `${username}:${passwordHashPart}`;
+      const fullSig = await hashPassword(payloadStr + globalSecret);
+      const expectedSig = fullSig.slice(0, 4);
+      
+      if (expectedSig !== sigInToken) {
+        console.warn("Verifikasi signature token pendek gagal.");
+        return null;
+      }
+      
+      return {
+        username,
+        passwordHash: passwordHashPart,
+        role: 'user',
+        masterSecret: defaultSecret
+      };
+    }
+
+    // Format Lama Base64 JSON
+    const decodedStr = decodeURIComponent(escape(atob(trimmedToken)));
     const tokenObj = JSON.parse(decodedStr);
 
-    // Support format lama (payload/signature) dan format baru (d/g)
     const payloadStr = tokenObj.d ?? tokenObj.payload;
     const sigInToken = tokenObj.g ?? tokenObj.signature;
     const secretInToken = tokenObj.s;
@@ -84,10 +111,10 @@ export async function verifyAccessToken(
 
     // Gunakan secret dari token jika ada
     const activeSecret = secretInToken
-      ? (secretInToken.length <= 12 ? defaultSecret : secretInToken) // secret pendek = pakai default
+      ? (secretInToken.length <= 12 ? defaultSecret : secretInToken)
       : defaultSecret;
 
-    // Hitung signature yang diharapkan, sesuaikan panjang dengan format token
+    // Hitung signature yang diharapkan
     const fullSig = await hashPassword(payloadStr + activeSecret);
     const expectedSig = sigInToken.length <= 16 ? fullSig.slice(0, 16) : fullSig;
 
@@ -100,7 +127,7 @@ export async function verifyAccessToken(
 
     return {
       username: payload.u,
-      passwordHash: payload.p, // Hash pendek (16 char) - akan dipakai sebagai identifier
+      passwordHash: payload.p,
       role,
       masterSecret: secretInToken ?? defaultSecret
     };

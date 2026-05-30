@@ -352,12 +352,12 @@ export default function LoginView() {
                       <KeyRound size={12} className="text-tokyo-pond" />
                       Kode Akses
                     </label>
-                    <textarea
+                    <input
+                      type="text"
                       value={tokenInput}
                       onChange={(e) => setTokenInput(e.target.value)}
-                      rows={4}
-                      placeholder="Tempel kode akses dari Master di sini..."
-                      className="w-full p-3.5 rounded-xl bg-gray-950/45 border border-gray-800 text-xs text-tokyo-darkText placeholder-gray-600 focus:outline-none focus:border-tokyo-pond transition-colors resize-none font-mono"
+                      placeholder="Tempel kode akses di sini (Contoh: erik-392657eb)..."
+                      className="w-full px-4 py-3 rounded-xl bg-gray-950/45 border border-gray-800 text-xs text-tokyo-darkText placeholder-gray-600 focus:outline-none focus:border-tokyo-pond transition-colors font-mono"
                       required
                     />
                   </div>

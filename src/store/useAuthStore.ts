@@ -63,8 +63,12 @@ export const useAuthStore = create<AuthStore>()(
         }
         
         const inputHash = await hashPassword(password);
-        // Cocokkan dengan full hash (64 char) ATAU short hash (16 char, untuk user dari token)
-        const matches = inputHash === user.passwordHash || inputHash.slice(0, 16) === user.passwordHash;
+        // Cocokkan dengan full hash (64 char), short hash (16 char), atau format baru super pendek (8 char)
+        const matches = 
+          inputHash === user.passwordHash || 
+          inputHash.slice(0, 16) === user.passwordHash ||
+          inputHash.slice(0, 8) === user.passwordHash;
+          
         if (!matches) {
           return { success: false, error: 'Password salah.' };
         }
@@ -107,6 +111,10 @@ export const useAuthStore = create<AuthStore>()(
 
         if (normUser.length < 3) {
           return { success: false, error: 'Username minimal 3 karakter.' };
+        }
+
+        if (normUser.length > 7) {
+          return { success: false, error: 'Username maksimal 7 karakter agar Kode Akses tetap singkat.' };
         }
 
         const exists = usersRegistry.some(u => u.username === normUser);
