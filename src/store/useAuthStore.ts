@@ -275,43 +275,58 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   },
 
   registerMaster: async (password) => {
-    // 1. Sign up on Supabase Auth
+    let userId: string | null = null;
+
+    // 1. Try signing up first
     const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
       email: 'master@kanjizen.com',
       password: password,
       options: {
-        data: {
-          username: 'master'
-        }
+        data: { username: 'master' }
       }
     });
 
-    if (signUpError || !signUpData.user) {
-      console.error(signUpError);
-      return false;
+    if (!signUpError && signUpData.user) {
+      userId = signUpData.user.id;
+    } else {
+      // signUp failed — email probably already registered. Try signIn instead.
+      console.warn('signUp gagal, mencoba signIn:', signUpError?.message);
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+        email: 'master@kanjizen.com',
+        password: password
+      });
+
+      if (signInError || !signInData.user) {
+        // signIn also failed — wrong password or other error
+        console.error('signIn juga gagal:', signInError?.message);
+        return false;
+      }
+      userId = signInData.user.id;
     }
 
-    // 2. Wait for trigger to create public profile, then upgrade its role to 'master'
+    if (!userId) return false;
+
+    // 2. Wait for trigger to create public profile
     let profile = null;
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 6; i++) {
       const { data } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', signUpData.user.id)
+        .eq('id', userId)
         .single();
       if (data) {
         profile = data;
         break;
       }
-      await new Promise(r => setTimeout(r, 500));
+      await new Promise(r => setTimeout(r, 600));
     }
 
     if (!profile) {
-      // Fallback: If database trigger fails to create the profile, create it manually
+      // Fallback: trigger belum berjalan — sisipkan profil master secara manual
       const { data: newProfile, error: insertError } = await supabase
         .from('profiles')
         .insert({
-          id: signUpData.user.id,
+          id: userId,
           username: 'master',
           role: 'master'
         })
@@ -319,20 +334,28 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         .single();
 
       if (insertError) {
-        console.error("Gagal membuat profil master secara manual:", insertError);
-        return false;
+        // Mungkin sudah ada karena race condition — coba ambil lagi
+        const { data: retryProfile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', userId)
+          .single();
+        if (!retryProfile) {
+          console.error('Gagal membuat profil master:', insertError);
+          return false;
+        }
+        profile = retryProfile;
+      } else {
+        profile = newProfile;
       }
-      profile = newProfile;
-    } else {
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ role: 'master' })
-        .eq('id', profile.id);
+    }
 
-      if (updateError) {
-        console.error("Gagal mengubah role ke master:", updateError);
-        return false;
-      }
+    // 3. Pastikan role = 'master'
+    if (profile.role !== 'master') {
+      await supabase
+        .from('profiles')
+        .update({ role: 'master', username: 'master' })
+        .eq('id', userId);
     }
 
     const userAccount: UserAccount = {
@@ -343,6 +366,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     };
 
     set({ currentUser: userAccount });
+
     return true;
   },
 
