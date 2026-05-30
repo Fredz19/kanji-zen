@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuthStore, UserAccount } from '../../store/useAuthStore';
 import { useKanjiStore } from '../../store/useKanjiStore';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, UserPlus, Trash2, KeyRound, Copy, Check, Users, Lock, ChevronRight, AlertTriangle } from 'lucide-react';
+import { Shield, UserPlus, Trash2, KeyRound, Copy, Check, Users, Lock, ChevronRight, AlertTriangle, Smartphone } from 'lucide-react';
 
 export default function AdminPanel() {
   const { 
@@ -13,6 +13,7 @@ export default function AdminPanel() {
     changeMasterPassword,
     generateTokenForUser,
     removeUserDevice,
+    importDeviceReport,
     deviceId
   } = useAuthStore();
 
@@ -34,6 +35,27 @@ export default function AdminPanel() {
   const [copiedToken, setCopiedToken] = useState(false);
   const [copiedPass, setCopiedPass] = useState(false);
   const [copiedExistingToken, setCopiedExistingToken] = useState<string | null>(null);
+
+  // Device Report import states
+  const [deviceReportInput, setDeviceReportInput] = useState('');
+  const [deviceReportError, setDeviceReportError] = useState<string | null>(null);
+  const [deviceReportSuccess, setDeviceReportSuccess] = useState<string | null>(null);
+  const [deviceReportLoading, setDeviceReportLoading] = useState(false);
+
+  const handleImportDeviceReport = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setDeviceReportError(null);
+    setDeviceReportSuccess(null);
+    setDeviceReportLoading(true);
+    const res = await importDeviceReport(deviceReportInput.trim());
+    setDeviceReportLoading(false);
+    if (res.success) {
+      setDeviceReportSuccess(`✅ Perangkat "${res.deviceName}" berhasil ditambahkan untuk pengguna "${res.username}"!`);
+      setDeviceReportInput('');
+    } else {
+      setDeviceReportError(res.error || 'Gagal mengimpor laporan perangkat.');
+    }
+  };
 
   // Feedback states
   const [error, setError] = useState<string | null>(null);
@@ -320,6 +342,46 @@ export default function AdminPanel() {
           </form>
         </div>
 
+      </div>
+
+      {/* Import Device Report Panel */}
+      <div className="p-5 rounded-3xl border border-tokyo-pond/20 bg-tokyo-card/30 backdrop-blur-md space-y-4">
+        <h3 className="text-sm font-bold text-tokyo-darkText flex items-center gap-2 border-b border-gray-800/40 pb-3">
+          <Smartphone size={16} className="text-tokyo-pond" /> Import Laporan Perangkat
+        </h3>
+
+        <p className="text-[10px] text-gray-500 leading-relaxed">
+          Tempel kode yang dikirimkan pengguna dari halaman dashboard mereka untuk mendaftarkan perangkat baru ke akun mereka.
+        </p>
+
+        {deviceReportError && (
+          <div className="p-3 rounded-xl bg-tokyo-torii/10 border border-tokyo-torii/30 text-tokyo-torii text-xs">
+            {deviceReportError}
+          </div>
+        )}
+        {deviceReportSuccess && (
+          <div className="p-3 rounded-xl bg-tokyo-bamboo/10 border border-tokyo-bamboo/30 text-tokyo-bamboo text-xs">
+            {deviceReportSuccess}
+          </div>
+        )}
+
+        <form onSubmit={handleImportDeviceReport} className="flex gap-2">
+          <input
+            type="text"
+            value={deviceReportInput}
+            onChange={(e) => setDeviceReportInput(e.target.value)}
+            placeholder="Tempel Kode Laporan Perangkat di sini..."
+            className="flex-1 px-4 py-2.5 rounded-xl bg-gray-950/40 border border-gray-800 text-xs text-tokyo-darkText font-mono focus:outline-none focus:border-tokyo-pond placeholder-gray-600"
+            required
+          />
+          <button
+            type="submit"
+            disabled={deviceReportLoading || !deviceReportInput.trim()}
+            className="px-4 py-2.5 rounded-xl bg-tokyo-pond text-[#0b0f19] text-xs font-extrabold shadow-md hover:opacity-90 transition-all disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
+          >
+            {deviceReportLoading ? 'Memproses...' : 'Import Perangkat'}
+          </button>
+        </form>
       </div>
 
       {/* Users List Board */}

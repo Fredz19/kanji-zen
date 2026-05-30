@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Flame, Clock, Target, Play, ShieldAlert, BookOpen, Edit3, Award, Zap, HelpCircle, Layers, FileUp, Download, Eye, LogOut, Shield, Settings, Book } from 'lucide-react';
+import { Flame, Clock, Target, Play, ShieldAlert, BookOpen, Edit3, Award, Zap, HelpCircle, Layers, FileUp, Download, Eye, LogOut, Shield, Settings, Book, Smartphone, Copy, Check } from 'lucide-react';
 import { useKanjiStore, getXPForNextLevel, ALL_ACHIEVEMENTS } from '../../store/useKanjiStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -34,8 +34,27 @@ export default function DashboardView({ onStartMode, darkMode, setDarkMode }: Da
     saveProgress
   } = useKanjiStore();
 
-  const { currentUser, logout } = useAuthStore();
+  const { currentUser, logout, getMyDeviceReport } = useAuthStore();
   const [activeTab, setActiveTab] = useState<'learn' | 'admin'>('learn');
+
+  // Device report state (for non-master users)
+  const [deviceReportCode, setDeviceReportCode] = useState<string | null>(null);
+  const [deviceReportLoading, setDeviceReportLoading] = useState(false);
+  const [deviceReportCopied, setDeviceReportCopied] = useState(false);
+
+  const handleGenerateDeviceReport = async () => {
+    setDeviceReportLoading(true);
+    const code = await getMyDeviceReport();
+    setDeviceReportCode(code);
+    setDeviceReportLoading(false);
+  };
+
+  const handleCopyDeviceReport = () => {
+    if (!deviceReportCode) return;
+    navigator.clipboard.writeText(deviceReportCode);
+    setDeviceReportCopied(true);
+    setTimeout(() => setDeviceReportCopied(false), 2500);
+  };
 
   const [selectedLevelFilter, setSelectedLevelFilter] = useState<'N5' | 'N4' | 'N3' | 'ALL'>('ALL');
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -699,6 +718,52 @@ export default function DashboardView({ onStartMode, darkMode, setDarkMode }: Da
                   </button>
                 </div>
               </div>
+
+              {/* Device Report Panel — hanya untuk user non-master */}
+              {currentUser?.role === 'user' && (
+                <div className="p-5 rounded-3xl border border-tokyo-pond/20 bg-tokyo-card/30 backdrop-blur-md space-y-3">
+                  <h3 className="text-xs uppercase tracking-wider text-gray-400 font-bold flex items-center gap-2">
+                    <Smartphone size={14} className="text-tokyo-pond" /> Sinkronisasi Perangkat
+                  </h3>
+                  <p className="text-[10px] text-gray-500 leading-relaxed">
+                    Jika Master belum melihat perangkat ini di panel admin, buat <strong className="text-tokyo-pond">Kode Laporan Perangkat</strong> lalu kirimkan ke Master.
+                  </p>
+
+                  {!deviceReportCode ? (
+                    <button
+                      onClick={handleGenerateDeviceReport}
+                      disabled={deviceReportLoading}
+                      className="w-full py-2.5 rounded-xl bg-tokyo-pond/10 border border-tokyo-pond/30 text-tokyo-pond text-xs font-bold hover:bg-tokyo-pond/20 transition-all flex items-center justify-center gap-2"
+                    >
+                      <Smartphone size={13} />
+                      {deviceReportLoading ? 'Membuat kode...' : 'Buat Kode Laporan Perangkat'}
+                    </button>
+                  ) : (
+                    <div className="space-y-2">
+                      <div className="p-2.5 rounded-xl bg-gray-950/60 border border-tokyo-pond/20 font-mono text-[9px] text-gray-400 break-all leading-relaxed">
+                        {deviceReportCode}
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={handleCopyDeviceReport}
+                          className="flex-1 py-2 rounded-xl bg-tokyo-pond text-[#0b0f19] text-xs font-extrabold hover:opacity-90 transition-all flex items-center justify-center gap-1.5"
+                        >
+                          {deviceReportCopied ? <><Check size={12} /> Tersalin!</> : <><Copy size={12} /> Salin Kode</>}
+                        </button>
+                        <button
+                          onClick={() => setDeviceReportCode(null)}
+                          className="px-3 py-2 rounded-xl border border-gray-800 text-gray-500 text-xs hover:text-gray-300 transition-colors"
+                        >
+                          Tutup
+                        </button>
+                      </div>
+                      <p className="text-[9px] text-amber-500 leading-normal">
+                        ⚠️ Kirim kode ini ke Master. Kode berlaku sekali dan hanya bisa dibaca oleh Master aplikasi ini.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
 
             </div>
           </div>

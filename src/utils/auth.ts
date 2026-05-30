@@ -159,3 +159,54 @@ export function getDeviceName(): string {
   return `${os} (${browser})`;
 }
 
+/**
+ * Menghasilkan "Kode Laporan Perangkat" yang bisa dikirim user ke master
+ * agar master bisa menambahkan perangkat tersebut ke registri tanpa backend.
+ * 
+ * Format: username|deviceId|deviceName|timestamp|signature
+ * Di-encode ke base64url agar aman dikirim via teks.
+ */
+export async function generateDeviceReport(
+  username: string,
+  deviceId: string,
+  deviceName: string,
+  masterSecret: string
+): Promise<string> {
+  const ts = Date.now().toString();
+  const payload = `${username}|${deviceId}|${deviceName}|${ts}`;
+  const sig = await hashPassword(payload + masterSecret);
+  const shortSig = sig.slice(0, 8);
+  const full = `${payload}|${shortSig}`;
+  // Encode ke base64 agar aman dikirim via teks
+  return btoa(unescape(encodeURIComponent(full)));
+}
+
+/**
+ * Memverifikasi dan mendecode "Kode Laporan Perangkat"
+ * Hanya berhasil jika masterSecret cocok (tidak bisa dipalsukan).
+ */
+export async function verifyDeviceReport(
+  code: string,
+  masterSecret: string
+): Promise<{ username: string; deviceId: string; deviceName: string; registeredAt: number } | null> {
+  try {
+    const decoded = decodeURIComponent(escape(atob(code.trim())));
+    const parts = decoded.split('|');
+    if (parts.length !== 5) return null;
+
+    const [username, deviceId, deviceName, tsStr, sigInCode] = parts;
+    const ts = parseInt(tsStr, 10);
+    if (isNaN(ts)) return null;
+
+    // Verifikasi signature
+    const payload = `${username}|${deviceId}|${deviceName}|${tsStr}`;
+    const sig = await hashPassword(payload + masterSecret);
+    const expectedSig = sig.slice(0, 8);
+
+    if (expectedSig !== sigInCode) return null;
+
+    return { username, deviceId, deviceName, registeredAt: ts };
+  } catch {
+    return null;
+  }
+}

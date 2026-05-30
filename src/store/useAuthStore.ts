@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { hashPassword, generateRandomPassword, generateAccessToken, verifyAccessToken, getDeviceName } from '../utils/auth';
+import { hashPassword, generateRandomPassword, generateAccessToken, verifyAccessToken, getDeviceName, generateDeviceReport, verifyDeviceReport } from '../utils/auth';
 
 export interface UserDevice {
   id: string;
@@ -38,6 +38,10 @@ interface AuthStore {
   
   // Token Actions
   registerWithToken: (token: string) => Promise<{ success: boolean; username?: string; error?: string }>;
+
+  // Device Sync Actions
+  getMyDeviceReport: () => Promise<string | null>;
+  importDeviceReport: (code: string) => Promise<{ success: boolean; deviceName?: string; username?: string; error?: string }>;
 }
 
 export const useAuthStore = create<AuthStore>()(
@@ -60,23 +64,6 @@ export const useAuthStore = create<AuthStore>()(
           hexSecret = Array.from(randomArray).map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
-        // --- SEED CONTOH USER 'test1' ---
-        const hasTest1 = usersRegistry.some(u => u.username === 'test1');
-        let updatedRegistry = [...usersRegistry];
-        if (!hasTest1) {
-          const test1Account: UserAccount = {
-            username: 'test1',
-            passwordHash: '937e8d5fbb48bd4949536cd65b8d35c426b80d2f830c5c308e2cdec422ae2244', // Password: 'test1234'
-            role: 'user',
-            createdAt: Date.now() - 24 * 60 * 60 * 1000, // Kemarin
-            devices: [
-              { id: 'mock-device-win', name: 'Windows (Chrome)', registeredAt: Date.now() - 24 * 60 * 60 * 1000 },
-              { id: 'mock-device-ios', name: 'iOS (Safari)', registeredAt: Date.now() - 12 * 60 * 60 * 1000 }
-            ]
-          };
-          updatedRegistry.push(test1Account);
-        }
-
         // Buat deviceId unik sekali seumur hidup untuk perangkat ini jika belum ada
         let currentDeviceId = get().deviceId;
         if (!currentDeviceId) {
@@ -84,10 +71,22 @@ export const useAuthStore = create<AuthStore>()(
           window.crypto.getRandomValues(randomArray);
           currentDeviceId = Array.from(randomArray).map(b => b.toString(16).padStart(2, '0')).join('');
         }
+
+        // Bersihkan user hasil seed lama yang mungkin tertinggal di localStorage.
+        // User seed dikenali dari device ID mock yang di-hardcode sebelumnya.
+        const MOCK_DEVICE_IDS = ['mock-device-win', 'mock-device-ios'];
+        const cleanedRegistry = usersRegistry.filter(u => {
+          const hasMockDevicesOnly =
+            u.role === 'user' &&
+            (u.devices || []).length > 0 &&
+            (u.devices || []).every(d => MOCK_DEVICE_IDS.includes(d.id));
+          // Hapus entry jika semua perangkatnya adalah mock (artinya ini user seed lama)
+          return !hasMockDevicesOnly;
+        });
         
         set({ 
           masterSecret: hexSecret, 
-          usersRegistry: updatedRegistry,
+          usersRegistry: cleanedRegistry,
           deviceId: currentDeviceId,
           isInitialized: true 
         });
@@ -351,6 +350,51 @@ export const useAuthStore = create<AuthStore>()(
         });
 
         return { success: true, username: decoded.username };
+      },
+
+      getMyDeviceReport: async () => {
+        const { currentUser, deviceId, masterSecret } = get();
+        if (!currentUser || currentUser.role === 'master') return null;
+        if (!deviceId || !masterSecret) return null;
+        const deviceName = getDeviceName();
+        return generateDeviceReport(currentUser.username, deviceId, deviceName, masterSecret);
+      },
+
+      importDeviceReport: async (code) => {
+        const { masterSecret, usersRegistry } = get();
+
+        const report = await verifyDeviceReport(code, masterSecret);
+        if (!report) {
+          return { success: false, error: 'Kode Laporan tidak valid atau tidak cocok dengan Master ini.' };
+        }
+
+        const { username, deviceId: newDeviceId, deviceName, registeredAt } = report;
+        const normUser = username.toLowerCase();
+
+        const targetUser = usersRegistry.find(u => u.username === normUser);
+        if (!targetUser) {
+          return { success: false, error: `Pengguna "${normUser}" tidak ditemukan di registry.` };
+        }
+
+        const existingDevices = targetUser.devices || [];
+
+        // Cek apakah perangkat ini sudah terdaftar
+        if (existingDevices.some(d => d.id === newDeviceId)) {
+          return { success: false, error: 'Perangkat ini sudah terdaftar untuk pengguna tersebut.' };
+        }
+
+        // Cek batas maksimal 2 perangkat
+        if (existingDevices.length >= 2) {
+          return { success: false, error: 'Batas maksimal 2 perangkat sudah tercapai untuk pengguna ini.' };
+        }
+
+        const updatedDevices = [...existingDevices, { id: newDeviceId, name: deviceName, registeredAt }];
+        const updatedRegistry = usersRegistry.map(u =>
+          u.username === normUser ? { ...u, devices: updatedDevices } : u
+        );
+
+        set({ usersRegistry: updatedRegistry });
+        return { success: true, deviceName, username: normUser };
       }
     }),
     {
