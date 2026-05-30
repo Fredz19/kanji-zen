@@ -424,6 +424,16 @@ export default function LoginView() {
                   >
                     {loading ? 'Menyimpan...' : 'Aktifkan Akses Master ✓'}
                   </button>
+
+                  <div className="text-center pt-2">
+                    <button
+                      type="button"
+                      onClick={() => { setTab('login'); setError(null); setSuccess(null); }}
+                      className="text-xs text-tokyo-sakura hover:underline font-bold"
+                    >
+                      Sudah mengaktifkan Akun Master? Masuk di sini →
+                    </button>
+                  </div>
                 </motion.form>
               )}
             </AnimatePresence>

@@ -209,6 +209,15 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       return { success: false, error: 'Profil tidak ditemukan.' };
     }
 
+    // Auto upgrade role to 'master' if the logged in user is master
+    if (profile.username === 'master' && profile.role !== 'master') {
+      await supabase
+        .from('profiles')
+        .update({ role: 'master' })
+        .eq('id', profile.id);
+      profile.role = 'master';
+    }
+
     // 3. Device validation (only for regular users)
     if (profile.role === 'user') {
       const { data: devices } = await supabase
