@@ -4,6 +4,7 @@ import { BookOpen, Search, Filter, Volume2, HelpCircle, X, Check, Award, Layers,
 import { KanjiItem } from '../../data/presets';
 import { useKanjiStore } from '../../store/useKanjiStore';
 import { TOPIC_CATEGORIES, getKanjiTopicId } from '../../utils/topics';
+import { speakJapaneseText } from '../../utils/speech';
 
 interface KanjiListViewProps {
   onBackToDashboard: () => void;
@@ -31,24 +32,7 @@ export default function KanjiListView({ onBackToDashboard, selectedLevel }: Kanj
 
   // Audio Speech Synthesis helper
   const speakText = (text: string) => {
-    if (!window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
-    
-    // Gunakan delay 50ms untuk menghindari bug cancel() langsung pada iOS Safari
-    setTimeout(() => {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'ja-JP';
-      utterance.rate = 0.85;
-      
-      // Pilih suara bahasa Jepang secara eksplisit (penting untuk perangkat iOS)
-      const voices = window.speechSynthesis.getVoices();
-      const jaVoice = voices.find(v => v.lang === 'ja-JP' || v.lang.startsWith('ja'));
-      if (jaVoice) {
-        utterance.voice = jaVoice;
-      }
-      
-      window.speechSynthesis.speak(utterance);
-    }, 50);
+    speakJapaneseText(text);
   };
 
   // Fetch strokes for detail modal if empty

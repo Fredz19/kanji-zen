@@ -4,6 +4,7 @@ import { Edit3, Play, Trash2, CheckCircle, Volume2, HelpCircle, AlertTriangle } 
 import { KanjiItem } from '../../data/presets';
 import { useKanjiStore } from '../../store/useKanjiStore';
 import { useAudio } from '../../hooks/useAudio';
+import { speakJapaneseText } from '../../utils/speech';
 
 interface WritingViewProps {
   onBackToDashboard: () => void;
@@ -230,24 +231,7 @@ export default function WritingView({ onBackToDashboard, selectedLevel }: Writin
   };
 
   const speakText = (text: string) => {
-    if (!window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
-    
-    // Gunakan delay 50ms untuk menghindari bug cancel() langsung pada iOS Safari
-    setTimeout(() => {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'ja-JP';
-      utterance.rate = 0.85;
-      
-      // Pilih suara bahasa Jepang secara eksplisit (penting untuk perangkat iOS)
-      const voices = window.speechSynthesis.getVoices();
-      const jaVoice = voices.find(v => v.lang === 'ja-JP' || v.lang.startsWith('ja'));
-      if (jaVoice) {
-        utterance.voice = jaVoice;
-      }
-      
-      window.speechSynthesis.speak(utterance);
-    }, 50);
+    speakJapaneseText(text);
   };
 
   // Play stroke sequence animations (if stroke data exists)

@@ -5,6 +5,7 @@ import { KanjiItem } from '../../data/presets';
 import { useKanjiStore } from '../../store/useKanjiStore';
 import { useAudio } from '../../hooks/useAudio';
 import { TOPIC_CATEGORIES, getKanjiTopicId } from '../../utils/topics';
+import { speakJapaneseText } from '../../utils/speech';
 
 interface FlashcardViewProps {
   onBackToDashboard: () => void;
@@ -110,24 +111,7 @@ export default function FlashcardView({ onBackToDashboard, selectedLevel }: Flas
 
   // Text-To-Speech Synthesis helper
   const speakJapanese = (text: string) => {
-    if (!window.speechSynthesis) return;
-    window.speechSynthesis.cancel(); // Stop any ongoing speech
-    
-    // Gunakan delay 50ms untuk menghindari bug cancel() langsung pada iOS Safari
-    setTimeout(() => {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'ja-JP';
-      utterance.rate = 0.85; // Natural pace
-      
-      // Pilih suara bahasa Jepang secara eksplisit (penting untuk perangkat iOS)
-      const voices = window.speechSynthesis.getVoices();
-      const jaVoice = voices.find(v => v.lang === 'ja-JP' || v.lang.startsWith('ja'));
-      if (jaVoice) {
-        utterance.voice = jaVoice;
-      }
-      
-      window.speechSynthesis.speak(utterance);
-    }, 50);
+    speakJapaneseText(text);
   };
 
   const now = Date.now();
