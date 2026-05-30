@@ -126,10 +126,10 @@ export default function LoginView() {
       } else {
         // Registration failed — master email likely already exists with different password.
         // Auto-switch to login form with 'master' pre-filled and show helpful message.
-        setUsername('master');
+        setUsername('fredz19');
         setPassword(masterPassword);
         setTab('login');
-        setError('Akun master sudah terdaftar. Coba masuk langsung dengan password di bawah ini.');
+        setError('Akun sudah terdaftar. Coba masuk langsung dengan password di bawah ini.');
       }
     } catch (err) {
       setError('Terjadi kesalahan saat pendaftaran.');
@@ -376,9 +376,9 @@ export default function LoginView() {
                     <div className="mx-auto w-10 h-10 rounded-2xl bg-tokyo-torii/15 border border-tokyo-torii/30 flex items-center justify-center text-tokyo-torii text-xl">
                       <Shield size={20} />
                     </div>
-                    <h2 className="text-sm font-extrabold text-tokyo-darkText">Inisialisasi Master Akun</h2>
+                    <h2 className="text-sm font-extrabold text-tokyo-darkText">Inisialisasi Akun Admin</h2>
                     <p className="text-[10px] text-gray-400 px-4">
-                      Tentukan password master untuk proyek online ini agar Anda dapat mengelola akses pembeli.
+                      Tentukan password untuk akun <strong className="text-tokyo-pond">fredz19</strong> agar Anda dapat mengelola akses pengguna.
                     </p>
                   </div>
 

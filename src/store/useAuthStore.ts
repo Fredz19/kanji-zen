@@ -2,6 +2,11 @@ import { create } from 'zustand';
 import { supabase } from '../utils/supabase';
 import { hashPassword, generateRandomPassword, getDeviceName } from '../utils/auth';
 
+// ─── Master Account Config (Fixpoint) ───────────────────────────────────────
+const MASTER_USERNAME = 'fredz19';
+const MASTER_EMAIL = `${MASTER_USERNAME}@kanjizen.com`;
+// ────────────────────────────────────────────────────────────────────────────
+
 export interface UserDevice {
   id: string;
   name: string;
@@ -156,7 +161,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       const masterProfile = (profiles || []).find(p => p.role === 'master');
       if (masterProfile) {
         registry.unshift({
-          username: 'master',
+          username: masterProfile.username,
           passwordHash: '',
           role: 'master',
           createdAt: new Date(masterProfile.created_at).getTime(),
@@ -209,8 +214,8 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       return { success: false, error: 'Profil tidak ditemukan.' };
     }
 
-    // Auto upgrade role to 'master' if the logged in user is master
-    if (profile.username === 'master' && profile.role !== 'master') {
+    // Auto upgrade role to 'master' if the logged in user is the master account
+    if (profile.username === MASTER_USERNAME && profile.role !== 'master') {
       await supabase
         .from('profiles')
         .update({ role: 'master' })
@@ -279,10 +284,10 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
     // 1. Try signing up first
     const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-      email: 'master@kanjizen.com',
+      email: MASTER_EMAIL,
       password: password,
       options: {
-        data: { username: 'master' }
+        data: { username: MASTER_USERNAME }
       }
     });
 
@@ -292,7 +297,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       // signUp failed — email probably already registered. Try signIn instead.
       console.warn('signUp gagal, mencoba signIn:', signUpError?.message);
       const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-        email: 'master@kanjizen.com',
+        email: MASTER_EMAIL,
         password: password
       });
 
@@ -327,7 +332,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         .from('profiles')
         .insert({
           id: userId,
-          username: 'master',
+          username: MASTER_USERNAME,
           role: 'master'
         })
         .select()
@@ -354,12 +359,12 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     if (profile.role !== 'master') {
       await supabase
         .from('profiles')
-        .update({ role: 'master', username: 'master' })
+        .update({ role: 'master', username: MASTER_USERNAME })
         .eq('id', userId);
     }
 
     const userAccount: UserAccount = {
-      username: 'master',
+      username: MASTER_USERNAME,
       passwordHash: '',
       role: 'master',
       createdAt: Date.now()
@@ -429,7 +434,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
   deleteUser: async (username) => {
     const normUser = username.trim().toLowerCase();
-    if (normUser === 'master') return;
+    if (normUser === MASTER_USERNAME) return;
 
     const { data: userProfile } = await supabase
       .from('profiles')
