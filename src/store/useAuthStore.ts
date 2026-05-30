@@ -55,12 +55,26 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   isInitialized: false,
 
   initializeAuth: async () => {
-    // 1. Generate/load persistent local device ID
+    // 1. Generate/load persistent local device ID, with fallback to legacy Zustand persist key
     let localDeviceId = localStorage.getItem('kanjizen-device-id');
     if (!localDeviceId) {
-      const randomArray = new Uint8Array(16);
-      window.crypto.getRandomValues(randomArray);
-      localDeviceId = Array.from(randomArray).map(b => b.toString(16).padStart(2, '0')).join('');
+      try {
+        const oldPersist = localStorage.getItem('kanjizen-auth-v1');
+        if (oldPersist) {
+          const parsed = JSON.parse(oldPersist);
+          if (parsed && parsed.state && parsed.state.deviceId) {
+            localDeviceId = parsed.state.deviceId;
+          }
+        }
+      } catch (e) {
+        console.error("Gagal membaca old persist deviceId:", e);
+      }
+      
+      if (!localDeviceId) {
+        const randomArray = new Uint8Array(16);
+        window.crypto.getRandomValues(randomArray);
+        localDeviceId = Array.from(randomArray).map(b => b.toString(16).padStart(2, '0')).join('');
+      }
       localStorage.setItem('kanjizen-device-id', localDeviceId);
     }
     
@@ -156,7 +170,21 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
   login: async (username, password) => {
     const normUser = username.trim().toLowerCase();
-    const { deviceId } = get();
+    
+    // Resolve deviceId lazily if empty
+    let currentDeviceId = get().deviceId;
+    if (!currentDeviceId) {
+      currentDeviceId = localStorage.getItem('kanjizen-device-id') || '';
+      if (!currentDeviceId) {
+        const randomArray = new Uint8Array(16);
+        window.crypto.getRandomValues(randomArray);
+        currentDeviceId = Array.from(randomArray).map(b => b.toString(16).padStart(2, '0')).join('');
+        localStorage.setItem('kanjizen-device-id', currentDeviceId);
+      }
+      set({ deviceId: currentDeviceId });
+    }
+
+    const deviceId = currentDeviceId;
     const deviceName = getDeviceName();
 
     // 1. Authenticate with Supabase
@@ -437,7 +465,20 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   },
 
   registerWithToken: async (token) => {
-    const { deviceId } = get();
+    // Resolve deviceId lazily if empty
+    let currentDeviceId = get().deviceId;
+    if (!currentDeviceId) {
+      currentDeviceId = localStorage.getItem('kanjizen-device-id') || '';
+      if (!currentDeviceId) {
+        const randomArray = new Uint8Array(16);
+        window.crypto.getRandomValues(randomArray);
+        currentDeviceId = Array.from(randomArray).map(b => b.toString(16).padStart(2, '0')).join('');
+        localStorage.setItem('kanjizen-device-id', currentDeviceId);
+      }
+      set({ deviceId: currentDeviceId });
+    }
+
+    const deviceId = currentDeviceId;
     const deviceName = getDeviceName();
 
     const { data: tokenRow, error: tokenError } = await supabase
