@@ -350,13 +350,13 @@ export default function LoginView() {
                   <div className="space-y-1.5">
                     <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block flex items-center gap-1">
                       <KeyRound size={12} className="text-tokyo-pond" />
-                      Kode Akses Kriptografis
+                      Kode Akses
                     </label>
                     <textarea
                       value={tokenInput}
                       onChange={(e) => setTokenInput(e.target.value)}
                       rows={4}
-                      placeholder="Tempelkan Kode Akses panjang (Base64) yang diberikan oleh Master di sini..."
+                      placeholder="Tempel kode akses dari Master di sini..."
                       className="w-full p-3.5 rounded-xl bg-gray-950/45 border border-gray-800 text-xs text-tokyo-darkText placeholder-gray-600 focus:outline-none focus:border-tokyo-pond transition-colors resize-none font-mono"
                       required
                     />
@@ -365,7 +365,7 @@ export default function LoginView() {
                   <div className="p-3 rounded-xl bg-gray-950/30 border border-gray-800/80 text-[10px] text-gray-400 leading-relaxed flex items-start gap-2.5">
                     <HelpCircle size={14} className="text-tokyo-pond shrink-0 mt-0.5 animate-pulse" />
                     <span>
-                      <strong>Tentang Kode Akses:</strong> Kode ini dienkripsi secara lokal oleh Master Akses. Menempelkannya di sini akan mendaftarkan profil Anda secara lokal di browser ini agar Anda dapat langsung belajar menggunakan username Anda.
+                      Kode akses diberikan oleh Master. Tempel kode di atas untuk langsung masuk ke sesi belajarmu.
                     </span>
                   </div>
 
