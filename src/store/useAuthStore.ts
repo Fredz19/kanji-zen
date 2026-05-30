@@ -63,7 +63,9 @@ export const useAuthStore = create<AuthStore>()(
         }
         
         const inputHash = await hashPassword(password);
-        if (inputHash !== user.passwordHash) {
+        // Cocokkan dengan full hash (64 char) ATAU short hash (16 char, untuk user dari token)
+        const matches = inputHash === user.passwordHash || inputHash.slice(0, 16) === user.passwordHash;
+        if (!matches) {
           return { success: false, error: 'Password salah.' };
         }
         
