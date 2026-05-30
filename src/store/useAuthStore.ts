@@ -104,30 +104,51 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       .from('profiles')
       .select('*');
 
+    const { data: tokens } = await supabase
+      .from('access_tokens')
+      .select('*');
+
     const { data: devices } = await supabase
       .from('user_devices')
       .select('*');
 
-    if (profiles) {
-      const registry: UserAccount[] = profiles.map(p => {
-        const userDevices = (devices || [])
-          .filter(d => d.user_id === p.id)
-          .map(d => ({
-            id: d.device_id,
-            name: d.device_name,
-            registeredAt: new Date(d.registered_at).getTime()
-          }));
+    if (tokens) {
+      const registry: UserAccount[] = tokens.map(t => {
+        const normUser = t.username.toLowerCase();
+        const profile = (profiles || []).find(p => p.username.toLowerCase() === normUser);
+        
+        const userDevices = profile
+          ? (devices || [])
+              .filter(d => d.user_id === profile.id)
+              .map(d => ({
+                id: d.device_id,
+                name: d.device_name,
+                registeredAt: new Date(d.registered_at).getTime()
+              }))
+          : [];
 
         return {
-          username: p.username,
+          username: t.username,
           passwordHash: '',
-          role: p.role,
-          createdAt: new Date(p.created_at).getTime(),
+          role: t.role,
+          createdAt: new Date(t.created_at).getTime(),
           devices: userDevices,
-          xp: p.xp,
-          level: p.level
+          xp: profile ? profile.xp : 0,
+          level: profile ? profile.level : 1
         };
       });
+
+      // Add Master account to the list as well for completeness
+      const masterProfile = (profiles || []).find(p => p.role === 'master');
+      if (masterProfile) {
+        registry.unshift({
+          username: 'master',
+          passwordHash: '',
+          role: 'master',
+          createdAt: new Date(masterProfile.created_at).getTime(),
+          devices: []
+        });
+      }
 
       set({ usersRegistry: registry });
     }
