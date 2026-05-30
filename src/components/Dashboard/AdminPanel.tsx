@@ -344,44 +344,18 @@ export default function AdminPanel() {
 
       </div>
 
-      {/* Import Device Report Panel */}
-      <div className="p-5 rounded-3xl border border-tokyo-pond/20 bg-tokyo-card/30 backdrop-blur-md space-y-4">
+      {/* Import Device Report Panel (Automatic Sync Info) */}
+      <div className="p-5 rounded-3xl border border-tokyo-pond/20 bg-tokyo-card/30 backdrop-blur-md space-y-3">
         <h3 className="text-sm font-bold text-tokyo-darkText flex items-center gap-2 border-b border-gray-800/40 pb-3">
-          <Smartphone size={16} className="text-tokyo-pond" /> Import Laporan Perangkat
+          <Smartphone size={16} className="text-tokyo-pond" /> Sinkronisasi Perangkat Online
         </h3>
 
-        <p className="text-[10px] text-gray-500 leading-relaxed">
-          Tempel kode yang dikirimkan pengguna dari halaman dashboard mereka untuk mendaftarkan perangkat baru ke akun mereka.
+        <p className="text-xs text-gray-400 leading-relaxed">
+          Sistem sinkronisasi perangkat sekarang berjalan secara <strong>otomatis & real-time</strong>. Pengguna tidak perlu lagi mengirimkan Kode Laporan Perangkat secara manual.
         </p>
-
-        {deviceReportError && (
-          <div className="p-3 rounded-xl bg-tokyo-torii/10 border border-tokyo-torii/30 text-tokyo-torii text-xs">
-            {deviceReportError}
-          </div>
-        )}
-        {deviceReportSuccess && (
-          <div className="p-3 rounded-xl bg-tokyo-bamboo/10 border border-tokyo-bamboo/30 text-tokyo-bamboo text-xs">
-            {deviceReportSuccess}
-          </div>
-        )}
-
-        <form onSubmit={handleImportDeviceReport} className="flex gap-2">
-          <input
-            type="text"
-            value={deviceReportInput}
-            onChange={(e) => setDeviceReportInput(e.target.value)}
-            placeholder="Tempel Kode Laporan Perangkat di sini..."
-            className="flex-1 px-4 py-2.5 rounded-xl bg-gray-950/40 border border-gray-800 text-xs text-tokyo-darkText font-mono focus:outline-none focus:border-tokyo-pond placeholder-gray-600"
-            required
-          />
-          <button
-            type="submit"
-            disabled={deviceReportLoading || !deviceReportInput.trim()}
-            className="px-4 py-2.5 rounded-xl bg-tokyo-pond text-[#0b0f19] text-xs font-extrabold shadow-md hover:opacity-90 transition-all disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
-          >
-            {deviceReportLoading ? 'Memproses...' : 'Import Perangkat'}
-          </button>
-        </form>
+        <p className="text-[10px] text-gray-500 leading-relaxed">
+          Setiap kali pengguna masuk di perangkat baru, sistem online akan memverifikasi dan mendaftarkan perangkat tersebut secara otomatis selama batas kuota maksimal 2 perangkat belum terpenuhi.
+        </p>
       </div>
 
       {/* Users List Board */}
@@ -408,10 +382,9 @@ export default function AdminPanel() {
               </thead>
               <tbody className="divide-y divide-gray-900/40">
                 {regularUsers.map(user => {
-                  // Get XP from progress maps
-                  const progress = userProgressMap[user.username];
-                  const userXP = progress ? progress.xp : 0;
-                  const userLv = progress ? progress.level : 1;
+                  // Get XP from user profile
+                  const userXP = user.xp !== undefined ? user.xp : 0;
+                  const userLv = user.level !== undefined ? user.level : 1;
                   const devices = user.devices || [];
                   
                   return (

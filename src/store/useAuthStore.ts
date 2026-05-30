@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { hashPassword, generateRandomPassword, generateAccessToken, verifyAccessToken, getDeviceName, generateDeviceReport, verifyDeviceReport } from '../utils/auth';
+import { supabase } from '../utils/supabase';
+import { hashPassword, generateRandomPassword, getDeviceName } from '../utils/auth';
 
 export interface UserDevice {
   id: string;
@@ -14,6 +14,8 @@ export interface UserAccount {
   role: 'master' | 'user';
   createdAt: number;
   devices?: UserDevice[];
+  xp?: number;
+  level?: number;
 }
 
 interface AuthStore {
@@ -24,386 +26,488 @@ interface AuthStore {
   isInitialized: boolean;
 
   // Actions
-  initializeAuth: () => void;
+  initializeAuth: () => Promise<void>;
   login: (username: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  logout: () => void;
+  logout: () => Promise<void>;
   
   // Master Actions
   registerMaster: (password: string) => Promise<boolean>;
   createUser: (username: string) => Promise<{ success: boolean; password?: string; token?: string; error?: string }>;
-  deleteUser: (username: string) => void;
+  deleteUser: (username: string) => Promise<void>;
   changeMasterPassword: (newPassword: string) => Promise<boolean>;
   generateTokenForUser: (username: string) => Promise<string | null>;
-  removeUserDevice: (username: string, deviceId: string) => void;
+  removeUserDevice: (username: string, deviceId: string) => Promise<void>;
+  loadUsersRegistry: () => Promise<void>;
   
   // Token Actions
   registerWithToken: (token: string) => Promise<{ success: boolean; username?: string; error?: string }>;
 
-  // Device Sync Actions
+  // Device Sync Actions (Stubbed for backward compatibility)
   getMyDeviceReport: () => Promise<string | null>;
   importDeviceReport: (code: string) => Promise<{ success: boolean; deviceName?: string; username?: string; error?: string }>;
 }
 
-export const useAuthStore = create<AuthStore>()(
-  persist(
-    (set, get) => ({
-      currentUser: null,
-      usersRegistry: [],
-      masterSecret: '',
-      deviceId: '',
-      isInitialized: false,
+export const useAuthStore = create<AuthStore>((set, get) => ({
+  currentUser: null,
+  usersRegistry: [],
+  masterSecret: '',
+  deviceId: '',
+  isInitialized: false,
 
-      initializeAuth: () => {
-        const { masterSecret, usersRegistry } = get();
-        let hexSecret = masterSecret;
+  initializeAuth: async () => {
+    // 1. Generate/load persistent local device ID
+    let localDeviceId = localStorage.getItem('kanjizen-device-id');
+    if (!localDeviceId) {
+      const randomArray = new Uint8Array(16);
+      window.crypto.getRandomValues(randomArray);
+      localDeviceId = Array.from(randomArray).map(b => b.toString(16).padStart(2, '0')).join('');
+      localStorage.setItem('kanjizen-device-id', localDeviceId);
+    }
+    
+    set({ deviceId: localDeviceId });
+
+    // 2. Check active Supabase session
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session && session.user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
         
-        // Buat secret unik sekali seumur hidup untuk perangkat ini jika belum ada
-        if (!masterSecret) {
-          const randomArray = new Uint8Array(16);
-          window.crypto.getRandomValues(randomArray);
-          hexSecret = Array.from(randomArray).map(b => b.toString(16).padStart(2, '0')).join('');
-        }
-
-        // Buat deviceId unik sekali seumur hidup untuk perangkat ini jika belum ada
-        let currentDeviceId = get().deviceId;
-        if (!currentDeviceId) {
-          const randomArray = new Uint8Array(16);
-          window.crypto.getRandomValues(randomArray);
-          currentDeviceId = Array.from(randomArray).map(b => b.toString(16).padStart(2, '0')).join('');
-        }
-
-        // Bersihkan user hasil seed lama yang mungkin tertinggal di localStorage.
-        // User seed dikenali dari device ID mock yang di-hardcode sebelumnya.
-        const MOCK_DEVICE_IDS = ['mock-device-win', 'mock-device-ios'];
-        const cleanedRegistry = usersRegistry.filter(u => {
-          const hasMockDevicesOnly =
-            u.role === 'user' &&
-            (u.devices || []).length > 0 &&
-            (u.devices || []).every(d => MOCK_DEVICE_IDS.includes(d.id));
-          // Hapus entry jika semua perangkatnya adalah mock (artinya ini user seed lama)
-          return !hasMockDevicesOnly;
-        });
-        
-        set({ 
-          masterSecret: hexSecret, 
-          usersRegistry: cleanedRegistry,
-          deviceId: currentDeviceId,
-          isInitialized: true 
-        });
-      },
-
-      login: async (username, password) => {
-        const { usersRegistry, deviceId } = get();
-        const normUser = username.trim().toLowerCase();
-        
-        const user = usersRegistry.find(u => u.username === normUser);
-        if (!user) {
-          return { success: false, error: 'Username tidak ditemukan.' };
-        }
-        
-        const inputHash = await hashPassword(password);
-        // Cocokkan dengan full hash (64 char), short hash (16 char), atau format baru super pendek (8 char)
-        const matches = 
-          inputHash === user.passwordHash || 
-          inputHash.slice(0, 16) === user.passwordHash ||
-          inputHash.slice(0, 8) === user.passwordHash;
-          
-        if (!matches) {
-          return { success: false, error: 'Password salah.' };
-        }
-
-        // --- VALIDASI BATAS MAKSIMAL 2 PERANGKAT ---
-        if (user.role === 'user') {
-          const devices = user.devices || [];
-          const isRegistered = devices.some(d => d.id === deviceId);
-          
-          if (!isRegistered) {
-            if (devices.length >= 2) {
-              return { 
-                success: false, 
-                error: 'Batas maksimal 2 perangkat telah tercapai. Perangkat ini tidak diizinkan masuk.' 
-              };
-            }
-            
-            // Tambahkan perangkat ini ke daftar perangkat terdaftar
-            const deviceName = getDeviceName();
-            const newDevices = [...devices, { id: deviceId, name: deviceName, registeredAt: Date.now() }];
-            
-            const updatedRegistry = usersRegistry.map(u => 
-              u.username === normUser ? { ...u, devices: newDevices } : u
-            );
-            
-            const updatedUser = { ...user, devices: newDevices };
-            set({ 
-              usersRegistry: updatedRegistry,
-              currentUser: updatedUser
-            });
-            return { success: true };
-          }
-        }
-        
-        set({ currentUser: user });
-        return { success: true };
-      },
-
-      logout: () => {
-        set({ currentUser: null });
-      },
-
-      registerMaster: async (password) => {
-        const { usersRegistry } = get();
-        const hasMaster = usersRegistry.some(u => u.role === 'master');
-        if (hasMaster) return false; // Master sudah ada!
-
-        const masterHash = await hashPassword(password);
-        const masterAccount: UserAccount = {
-          username: 'master',
-          passwordHash: masterHash,
-          role: 'master',
-          createdAt: Date.now()
+      if (profile) {
+        const userAccount: UserAccount = {
+          username: profile.username,
+          passwordHash: '',
+          role: profile.role,
+          createdAt: new Date(profile.created_at).getTime(),
+          xp: profile.xp,
+          level: profile.level
         };
-
-        set({
-          usersRegistry: [masterAccount],
-          currentUser: masterAccount
-        });
-        return true;
-      },
-
-      createUser: async (username) => {
-        const { usersRegistry, masterSecret } = get();
-        const normUser = username.trim().toLowerCase();
         
-        if (!normUser) {
-          return { success: false, error: 'Username tidak boleh kosong.' };
+        set({ currentUser: userAccount });
+
+        if (profile.role === 'master') {
+          await get().loadUsersRegistry();
         }
+      }
+    }
+    
+    set({ isInitialized: true });
+  },
 
-        if (normUser.length < 3) {
-          return { success: false, error: 'Username minimal 3 karakter.' };
-        }
+  loadUsersRegistry: async () => {
+    const { currentUser } = get();
+    if (currentUser?.role !== 'master') return;
 
-        if (normUser.length > 7) {
-          return { success: false, error: 'Username maksimal 7 karakter agar Kode Akses tetap singkat.' };
-        }
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('*');
 
-        const exists = usersRegistry.some(u => u.username === normUser);
-        if (exists) {
-          return { success: false, error: 'Username sudah terdaftar.' };
-        }
+    const { data: devices } = await supabase
+      .from('user_devices')
+      .select('*');
 
-        const rawPassword = generateRandomPassword();
-        const passHash = await hashPassword(rawPassword);
-
-        const newAccount: UserAccount = {
-          username: normUser,
-          passwordHash: passHash,
-          role: 'user',
-          createdAt: Date.now()
-        };
-
-        const updatedRegistry = [...usersRegistry, newAccount];
-        set({ usersRegistry: updatedRegistry });
-
-        // Buat token akses kriptografis instan untuk dibagikan
-        const token = await generateAccessToken(normUser, passHash, 'user', masterSecret);
+    if (profiles) {
+      const registry: UserAccount[] = profiles.map(p => {
+        const userDevices = (devices || [])
+          .filter(d => d.user_id === p.id)
+          .map(d => ({
+            id: d.device_id,
+            name: d.device_name,
+            registeredAt: new Date(d.registered_at).getTime()
+          }));
 
         return {
-          success: true,
-          password: rawPassword,
-          token
+          username: p.username,
+          passwordHash: '',
+          role: p.role,
+          createdAt: new Date(p.created_at).getTime(),
+          devices: userDevices,
+          xp: p.xp,
+          level: p.level
         };
-      },
+      });
 
-      deleteUser: (username) => {
-        const { usersRegistry, currentUser } = get();
-        const normUser = username.trim().toLowerCase();
-        
-        // Cegah menghapus master
-        const target = usersRegistry.find(u => u.username === normUser);
-        if (target?.role === 'master') return;
-
-        const updatedRegistry = usersRegistry.filter(u => u.username !== normUser);
-        
-        // Log out jika user yang sedang aktif dihapus
-        const isCurrent = currentUser?.username === normUser;
-        
-        set({
-          usersRegistry: updatedRegistry,
-          currentUser: isCurrent ? null : currentUser
-        });
-      },
-
-      changeMasterPassword: async (newPassword) => {
-        const { usersRegistry, currentUser } = get();
-        if (currentUser?.role !== 'master') return false;
-
-        const newHash = await hashPassword(newPassword);
-        
-        const updatedRegistry = usersRegistry.map(u => {
-          if (u.role === 'master') {
-            return { ...u, passwordHash: newHash };
-          }
-          return u;
-        });
-
-        const updatedUser = { ...currentUser, passwordHash: newHash };
-
-        set({
-          usersRegistry: updatedRegistry,
-          currentUser: updatedUser
-        });
-        return true;
-      },
-
-      generateTokenForUser: async (username) => {
-        const { usersRegistry, masterSecret } = get();
-        const normUser = username.trim().toLowerCase();
-        const user = usersRegistry.find(u => u.username === normUser);
-        
-        if (!user) return null;
-        return generateAccessToken(user.username, user.passwordHash, user.role, masterSecret);
-      },
-
-      removeUserDevice: (username, targetDeviceId) => {
-        const { usersRegistry, currentUser } = get();
-        const normUser = username.trim().toLowerCase();
-        
-        const updatedRegistry = usersRegistry.map(u => {
-          if (u.username === normUser) {
-            const devices = u.devices || [];
-            const updatedDevices = devices.filter(d => d.id !== targetDeviceId);
-            return { ...u, devices: updatedDevices };
-          }
-          return u;
-        });
-
-        // Update currentUser devices if they are the one affected
-        const isCurrent = currentUser?.username === normUser;
-        const updatedCurrentUser = isCurrent 
-          ? { ...currentUser, devices: (currentUser.devices || []).filter(d => d.id !== targetDeviceId) }
-          : currentUser;
-
-        set({ 
-          usersRegistry: updatedRegistry,
-          currentUser: updatedCurrentUser
-        });
-      },
-
-      registerWithToken: async (token) => {
-        const { masterSecret, usersRegistry, deviceId } = get();
-        
-        // Verifikasi token tanda tangan digital
-        const decoded = await verifyAccessToken(token, masterSecret);
-        if (!decoded) {
-          return { success: false, error: 'Kode Akses tidak valid atau telah dimodifikasi.' };
-        }
-
-        // Jika registry kosong (perangkat baru/pembeli), adopsi masterSecret dari token!
-        if (usersRegistry.length === 0 && decoded.masterSecret) {
-          set({ masterSecret: decoded.masterSecret });
-        }
-
-        const normUser = decoded.username.toLowerCase();
-        const existingUser = usersRegistry.find(u => u.username === normUser);
-        let userDevices = existingUser?.devices || [];
-        
-        // --- VALIDASI BATAS MAKSIMAL 2 PERANGKAT ---
-        if (decoded.role === 'user') {
-          const isRegistered = userDevices.some(d => d.id === deviceId);
-          if (!isRegistered) {
-            if (userDevices.length >= 2) {
-              return { 
-                success: false, 
-                error: 'Batas maksimal 2 perangkat telah tercapai. Perangkat ini tidak diizinkan masuk.' 
-              };
-            }
-            
-            const deviceName = getDeviceName();
-            userDevices = [...userDevices, { id: deviceId, name: deviceName, registeredAt: Date.now() }];
-          }
-        }
-
-        let updatedRegistry = [...usersRegistry];
-        const exists = usersRegistry.some(u => u.username === normUser);
-        
-        const newAccount: UserAccount = {
-          username: normUser,
-          passwordHash: decoded.passwordHash,
-          role: decoded.role,
-          createdAt: existingUser?.createdAt || Date.now(),
-          devices: userDevices
-        };
-
-        if (exists) {
-          // Update password hash saja jika username sama sudah ada
-          updatedRegistry = usersRegistry.map(u => 
-            u.username === normUser ? { ...u, passwordHash: decoded.passwordHash, devices: userDevices } : u
-          );
-        } else {
-          // Tambahkan akun baru
-          updatedRegistry.push(newAccount);
-        }
-
-        set({
-          usersRegistry: updatedRegistry,
-          currentUser: newAccount
-        });
-
-        return { success: true, username: decoded.username };
-      },
-
-      getMyDeviceReport: async () => {
-        const { currentUser, deviceId, masterSecret } = get();
-        if (!currentUser || currentUser.role === 'master') return null;
-        if (!deviceId || !masterSecret) return null;
-        const deviceName = getDeviceName();
-        return generateDeviceReport(currentUser.username, deviceId, deviceName, masterSecret);
-      },
-
-      importDeviceReport: async (code) => {
-        const { masterSecret, usersRegistry } = get();
-
-        const report = await verifyDeviceReport(code, masterSecret);
-        if (!report) {
-          return { success: false, error: 'Kode Laporan tidak valid atau tidak cocok dengan Master ini.' };
-        }
-
-        const { username, deviceId: newDeviceId, deviceName, registeredAt } = report;
-        const normUser = username.toLowerCase();
-
-        const targetUser = usersRegistry.find(u => u.username === normUser);
-        if (!targetUser) {
-          return { success: false, error: `Pengguna "${normUser}" tidak ditemukan di registry.` };
-        }
-
-        const existingDevices = targetUser.devices || [];
-
-        // Cek apakah perangkat ini sudah terdaftar
-        if (existingDevices.some(d => d.id === newDeviceId)) {
-          return { success: false, error: 'Perangkat ini sudah terdaftar untuk pengguna tersebut.' };
-        }
-
-        // Cek batas maksimal 2 perangkat
-        if (existingDevices.length >= 2) {
-          return { success: false, error: 'Batas maksimal 2 perangkat sudah tercapai untuk pengguna ini.' };
-        }
-
-        const updatedDevices = [...existingDevices, { id: newDeviceId, name: deviceName, registeredAt }];
-        const updatedRegistry = usersRegistry.map(u =>
-          u.username === normUser ? { ...u, devices: updatedDevices } : u
-        );
-
-        set({ usersRegistry: updatedRegistry });
-        return { success: true, deviceName, username: normUser };
-      }
-    }),
-    {
-      name: 'kanjizen-auth-v1', // Kunci localStorage untuk data otentikasi
-      partialize: (state) => ({
-        usersRegistry: state.usersRegistry,
-        masterSecret: state.masterSecret,
-        deviceId: state.deviceId
-      })
+      set({ usersRegistry: registry });
     }
-  )
-);
+  },
+
+  login: async (username, password) => {
+    const normUser = username.trim().toLowerCase();
+    const { deviceId } = get();
+    const deviceName = getDeviceName();
+
+    // 1. Authenticate with Supabase
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+      email: normUser + '@kanjizen.com',
+      password: password
+    });
+
+    if (authError || !authData.user) {
+      return { success: false, error: 'Username atau password salah.' };
+    }
+
+    // 2. Fetch profile
+    const { data: profile, error: profError } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', authData.user.id)
+      .single();
+
+    if (profError || !profile) {
+      await supabase.auth.signOut();
+      return { success: false, error: 'Profil tidak ditemukan.' };
+    }
+
+    // 3. Device validation (only for regular users)
+    if (profile.role === 'user') {
+      const { data: devices } = await supabase
+        .from('user_devices')
+        .select('*')
+        .eq('user_id', profile.id);
+
+      const registeredDevices = devices || [];
+      const isThisDeviceRegistered = registeredDevices.some(d => d.device_id === deviceId);
+
+      if (!isThisDeviceRegistered) {
+        if (registeredDevices.length >= 2) {
+          await supabase.auth.signOut();
+          return { 
+            success: false, 
+            error: 'Batas maksimal 2 perangkat telah tercapai. Perangkat ini tidak diizinkan masuk.' 
+          };
+        }
+
+        // Register device
+        const { error: devError } = await supabase
+          .from('user_devices')
+          .insert({
+            user_id: profile.id,
+            device_id: deviceId,
+            device_name: deviceName
+          });
+
+        if (devError) {
+          await supabase.auth.signOut();
+          return { success: false, error: 'Gagal mendaftarkan perangkat baru Anda.' };
+        }
+      }
+    }
+
+    const userAccount: UserAccount = {
+      username: profile.username,
+      passwordHash: '',
+      role: profile.role,
+      createdAt: new Date(profile.created_at).getTime()
+    };
+
+    set({ currentUser: userAccount });
+
+    if (profile.role === 'master') {
+      await get().loadUsersRegistry();
+    }
+
+    return { success: true };
+  },
+
+  logout: async () => {
+    await supabase.auth.signOut();
+    set({ currentUser: null, usersRegistry: [] });
+  },
+
+  registerMaster: async (password) => {
+    // 1. Sign up on Supabase Auth
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+      email: 'master@kanjizen.com',
+      password: password,
+      options: {
+        data: {
+          username: 'master'
+        }
+      }
+    });
+
+    if (signUpError || !signUpData.user) {
+      console.error(signUpError);
+      return false;
+    }
+
+    // 2. Wait for trigger to create public profile, then upgrade its role to 'master'
+    let profile = null;
+    for (let i = 0; i < 5; i++) {
+      const { data } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', signUpData.user.id)
+        .single();
+      if (data) {
+        profile = data;
+        break;
+      }
+      await new Promise(r => setTimeout(r, 500));
+    }
+
+    if (!profile) return false;
+
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update({ role: 'master' })
+      .eq('id', profile.id);
+
+    if (updateError) {
+      console.error("Gagal mengubah role ke master:", updateError);
+      return false;
+    }
+
+    const userAccount: UserAccount = {
+      username: 'master',
+      passwordHash: '',
+      role: 'master',
+      createdAt: Date.now()
+    };
+
+    set({ currentUser: userAccount });
+    return true;
+  },
+
+  createUser: async (username) => {
+    const normUser = username.trim().toLowerCase();
+    if (!normUser) return { success: false, error: 'Username tidak boleh kosong.' };
+    if (normUser.length < 3) return { success: false, error: 'Username minimal 3 karakter.' };
+    if (normUser.length > 15) return { success: false, error: 'Username maksimal 15 karakter.' };
+
+    // 1. Check if user already exists
+    const { data: exists } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('username', normUser)
+      .maybeSingle();
+
+    if (exists) {
+      return { success: false, error: 'Username sudah terdaftar.' };
+    }
+
+    // 2. Create online access token row
+    const rawPassword = generateRandomPassword();
+    const token = `${normUser}-${rawPassword.replace('zen-', '')}`;
+
+    const { error: tokenError } = await supabase
+      .from('access_tokens')
+      .insert({
+        token,
+        username: normUser,
+        password_hash: await hashPassword(rawPassword),
+        role: 'user'
+      });
+
+    if (tokenError) {
+      return { success: false, error: 'Gagal membuat Kode Akses: ' + tokenError.message };
+    }
+
+    await get().loadUsersRegistry();
+
+    return {
+      success: true,
+      password: rawPassword,
+      token
+    };
+  },
+
+  deleteUser: async (username) => {
+    const normUser = username.trim().toLowerCase();
+    if (normUser === 'master') return;
+
+    const { data: userProfile } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('username', normUser)
+      .single();
+
+    if (!userProfile) return;
+
+    // Delete public profile (cascades automatically to progress and devices)
+    const { error } = await supabase
+      .from('profiles')
+      .delete()
+      .eq('id', userProfile.id);
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    // Delete access token
+    await supabase
+      .from('access_tokens')
+      .delete()
+      .eq('username', normUser);
+
+    await get().loadUsersRegistry();
+  },
+
+  changeMasterPassword: async (newPassword) => {
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword
+    });
+
+    return !error;
+  },
+
+  generateTokenForUser: async (username) => {
+    const normUser = username.trim().toLowerCase();
+    
+    const { data } = await supabase
+      .from('access_tokens')
+      .select('token')
+      .eq('username', normUser)
+      .maybeSingle();
+
+    if (data) return data.token;
+
+    const rawPassword = generateRandomPassword();
+    const token = `${normUser}-${rawPassword.replace('zen-', '')}`;
+
+    const { error } = await supabase
+      .from('access_tokens')
+      .insert({
+        token,
+        username: normUser,
+        password_hash: await hashPassword(rawPassword),
+        role: 'user'
+      });
+
+    if (error) return null;
+    return token;
+  },
+
+  removeUserDevice: async (username, targetDeviceId) => {
+    const normUser = username.trim().toLowerCase();
+
+    const { data: userProfile } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('username', normUser)
+      .single();
+
+    if (!userProfile) return;
+
+    await supabase
+      .from('user_devices')
+      .delete()
+      .eq('user_id', userProfile.id)
+      .eq('device_id', targetDeviceId);
+
+    await get().loadUsersRegistry();
+  },
+
+  registerWithToken: async (token) => {
+    const { deviceId } = get();
+    const deviceName = getDeviceName();
+
+    const { data: tokenRow, error: tokenError } = await supabase
+      .from('access_tokens')
+      .select('*')
+      .eq('token', token.trim())
+      .single();
+
+    if (tokenError || !tokenRow) {
+      return { success: false, error: 'Kode Akses tidak valid atau tidak ditemukan.' };
+    }
+
+    const normUser = tokenRow.username;
+
+    // Sign up on Supabase Auth
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+      email: normUser + '@kanjizen.com',
+      password: token.trim(),
+      options: {
+        data: {
+          username: normUser
+        }
+      }
+    });
+
+    let userId = signUpData.user?.id;
+    if (signUpError) {
+      // If already signed up in Auth, try logging in
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+        email: normUser + '@kanjizen.com',
+        password: token.trim()
+      });
+
+      if (signInError || !signInData.user) {
+        return { success: false, error: 'Kode Akses tidak valid atau gagal mendaftarkan pengguna baru.' };
+      }
+      userId = signInData.user.id;
+    }
+
+    if (!userId) {
+      return { success: false, error: 'Gagal memproses pendaftaran.' };
+    }
+
+    let profile = null;
+    for (let i = 0; i < 5; i++) {
+      const { data } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      if (data) {
+        profile = data;
+        break;
+      }
+      await new Promise(r => setTimeout(r, 500));
+    }
+
+    if (!profile) {
+      return { success: false, error: 'Gagal menginisialisasi profil pengguna online.' };
+    }
+
+    // Validate device limit (max 2)
+    const { data: devices } = await supabase
+      .from('user_devices')
+      .select('*')
+      .eq('user_id', profile.id);
+
+    const registeredDevices = devices || [];
+    const isThisDeviceRegistered = registeredDevices.some(d => d.device_id === deviceId);
+
+    if (!isThisDeviceRegistered) {
+      if (registeredDevices.length >= 2) {
+        await supabase.auth.signOut();
+        return { 
+          success: false, 
+          error: 'Batas maksimal 2 perangkat telah tercapai. Perangkat ini tidak diizinkan masuk.' 
+        };
+      }
+
+      const { error: devError } = await supabase
+        .from('user_devices')
+        .insert({
+          user_id: profile.id,
+          device_id: deviceId,
+          device_name: deviceName
+        });
+
+      if (devError) {
+        await supabase.auth.signOut();
+        return { success: false, error: 'Gagal mendaftarkan perangkat Anda.' };
+      }
+    }
+
+    const userAccount: UserAccount = {
+      username: profile.username,
+      passwordHash: '',
+      role: profile.role,
+      createdAt: new Date(profile.created_at).getTime()
+    };
+
+    set({ currentUser: userAccount });
+    return { success: true, username: normUser };
+  },
+
+  // Stubbed for backward compatibility
+  getMyDeviceReport: async () => null,
+  importDeviceReport: async () => ({ success: false, error: 'Sync manual dinonaktifkan di mode online.' })
+}));

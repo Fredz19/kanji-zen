@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useKanjiStore } from '../../store/useKanjiStore';
+import { supabase } from '../../utils/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Lock, User, KeyRound, Check, Eye, EyeOff, AlertCircle, Copy, HelpCircle } from 'lucide-react';
+import { Shield, Lock, User, KeyRound, Check, Eye, EyeOff, AlertCircle, HelpCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export default function LoginView() {
   const { 
-    usersRegistry, 
     login, 
     registerMaster, 
     registerWithToken, 
     initializeAuth 
   } = useAuthStore();
   
-  const { switchUserProgress } = useKanjiStore();
+  const { initializeDatabase } = useKanjiStore();
 
-  const hasMaster = usersRegistry.some(u => u.role === 'master');
+  const [hasMaster, setHasMaster] = useState<boolean>(true); // Default to true to prevent setup tab flashing on load
   const [tab, setTab] = useState<'login' | 'token' | 'setup'>('token');
   
   // Secret knock states (to hide Master Initialization from buyers)
@@ -38,10 +38,35 @@ export default function LoginView() {
   const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Initialize auth store on mount
+  // Initialize auth store on mount & check master online
   useEffect(() => {
     initializeAuth();
+    checkMasterOnline();
   }, []);
+
+  const checkMasterOnline = async () => {
+    try {
+      const { data } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('role', 'master')
+        .limit(1);
+      
+      const exists = data && data.length > 0;
+      setHasMaster(!!exists);
+      
+      // Auto toggle tab
+      if (exists) {
+        setTab('login');
+      } else {
+        setTab('token');
+      }
+    } catch (e) {
+      console.error(e);
+      setHasMaster(true); // Fallback
+      setTab('token');
+    }
+  };
 
   // Reset logo clicks after 2 seconds of inactivity
   useEffect(() => {
@@ -65,19 +90,6 @@ export default function LoginView() {
     });
   };
 
-  // Sync tab based on whether master account exists
-  useEffect(() => {
-    if (usersRegistry.length > 0) {
-      if (hasMaster) {
-        setTab('login');
-      } else {
-        setTab('token');
-      }
-    } else {
-      setTab('token');
-    }
-  }, [usersRegistry, hasMaster]);
-
   const triggerConfetti = () => {
     confetti({
       particleCount: 80,
@@ -100,8 +112,7 @@ export default function LoginView() {
     try {
       const res = await login(username, password);
       if (res.success) {
-        // Muat progress belajar user tersebut
-        switchUserProgress(username);
+        await initializeDatabase();
         triggerConfetti();
       } else {
         setError(res.error || 'Terjadi kesalahan saat masuk.');
@@ -129,10 +140,11 @@ export default function LoginView() {
     setLoading(true);
 
     try {
-      const success = await registerMaster(masterPassword);
-      if (success) {
-        switchUserProgress('master');
+      const ok = await registerMaster(masterPassword);
+      if (ok) {
+        await initializeDatabase();
         setSuccess('Akun Master berhasil dibuat! Selamat datang di KanjiZen.');
+        setHasMaster(true);
         triggerConfetti();
       } else {
         setError('Gagal membuat akun Master.');
@@ -158,7 +170,7 @@ export default function LoginView() {
     try {
       const res = await registerWithToken(tokenInput);
       if (res.success && res.username) {
-        switchUserProgress(res.username);
+        await initializeDatabase();
         setSuccess(`Kode Akses Valid! Selamat datang, ${res.username}.`);
         triggerConfetti();
       } else {
@@ -356,7 +368,7 @@ export default function LoginView() {
                       type="text"
                       value={tokenInput}
                       onChange={(e) => setTokenInput(e.target.value)}
-                      placeholder="Tempel kode akses di sini (Contoh: erik-392657eb)..."
+                      placeholder="Tempel kode akses di sini (Contoh: budi-392657eb)..."
                       className="w-full px-4 py-3 rounded-xl bg-gray-950/45 border border-gray-800 text-xs text-tokyo-darkText placeholder-gray-600 focus:outline-none focus:border-tokyo-pond transition-colors font-mono"
                       required
                     />
@@ -365,7 +377,7 @@ export default function LoginView() {
                   <div className="p-3 rounded-xl bg-gray-950/30 border border-gray-800/80 text-[10px] text-gray-400 leading-relaxed flex items-start gap-2.5">
                     <HelpCircle size={14} className="text-tokyo-pond shrink-0 mt-0.5 animate-pulse" />
                     <span>
-                      Kode akses diberikan oleh Master. Tempel kode di atas untuk langsung masuk ke sesi belajarmu.
+                      Kode akses diberikan oleh Master. Tempel kode di atas untuk langsung masuk ke sesi belajarmu secara online.
                     </span>
                   </div>
 
@@ -395,7 +407,7 @@ export default function LoginView() {
                     </div>
                     <h2 className="text-sm font-extrabold text-tokyo-darkText">Inisialisasi Master Akun</h2>
                     <p className="text-[10px] text-gray-400 px-4">
-                      Tentukan password master untuk perangkat ini agar Anda dapat mengelola akses pembeli di kemudian hari.
+                      Tentukan password master untuk proyek online ini agar Anda dapat mengelola akses pembeli.
                     </p>
                   </div>
 
@@ -455,7 +467,7 @@ export default function LoginView() {
 
         {/* Small footer text */}
         <p className="text-[10px] text-center text-gray-500">
-          KanjiZen Spaced Repetition System. Keamanan Lokal & 100% Offline-First.
+          KanjiZen Spaced Repetition System. Keamanan Cloud & Sinkronisasi Online Otomatis.
         </p>
       </div>
     </div>
