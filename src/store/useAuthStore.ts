@@ -288,6 +288,20 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       return { success: false, error: 'Username sudah terdaftar.' };
     }
 
+    // Check if a token already exists for this username in access_tokens
+    const { data: tokenExists } = await supabase
+      .from('access_tokens')
+      .select('token')
+      .eq('username', normUser)
+      .maybeSingle();
+
+    if (tokenExists) {
+      return { 
+        success: false, 
+        error: `Username "${username}" sudah memiliki Kode Akses aktif yang dibuat sebelumnya. Silakan gunakan username lain (seperti "${username}2") atau gunakan Kode Akses yang sudah ada.` 
+      };
+    }
+
     // 2. Create online access token row
     const rawPassword = generateRandomPassword();
     const token = `${normUser}-${rawPassword.replace('zen-', '')}`;
