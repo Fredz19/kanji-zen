@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { supabase } from '../utils/supabase';
+import { getLocalSession } from './useAuthStore';
 import { KanjiItem, getPresetForKanji } from '../data/presets';
 import { parseKanjiMarkdown } from '../utils/parser';
 import { calculateNextReview, ReviewStatus } from '../utils/srs';
@@ -111,10 +112,9 @@ export const useKanjiStore = create<KanjiStore>((set, get) => ({
   userProgressMap: {},
 
   initializeDatabase: async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session || !session.user) return;
-
-    const activeUserId = session.user.id;
+    const session = getLocalSession();
+    if (!session) return;
+    const activeUserId = session.userId;
 
     // 1. Fetch user profile
     const { data: profile } = await supabase
@@ -212,10 +212,9 @@ export const useKanjiStore = create<KanjiStore>((set, get) => ({
   },
 
   reviewCard: async (id, status, responseTimeMs) => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session || !session.user) return;
-
-    const activeUserId = session.user.id;
+    const session = getLocalSession();
+    if (!session) return;
+    const activeUserId = session.userId;
     const { kanjiList, xp, level, streak, lastStudyDate, streakHistory, dailyQuests, unlockedAchievements, correctAnswers, totalAnswers, confusionCounts, totalStudyTime } = get();
     const todayStr = getLocalDateString();
 
@@ -357,25 +356,19 @@ export const useKanjiStore = create<KanjiStore>((set, get) => ({
   },
 
   incrementStudyTime: async (seconds) => {
-    // Only increment state locally for high performance
     const newTotal = get().totalStudyTime + seconds;
     set({ totalStudyTime: newTotal });
-
-    // Sync to Supabase periodically (e.g. on every 30 seconds)
     if (newTotal % 30 === 0) {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session && session.user) {
-        await supabase
-          .from('profiles')
-          .update({ total_study_time: newTotal })
-          .eq('id', session.user.id);
+      const session = getLocalSession();
+      if (session) {
+        await supabase.from('profiles').update({ total_study_time: newTotal }).eq('id', session.userId);
       }
     }
   },
 
   trackConfusion: async (kanjiA, kanjiB) => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session || !session.user) return;
+    const session = getLocalSession();
+    if (!session) return;
 
     const { confusionCounts } = get();
     const key = [kanjiA, kanjiB].sort().join('-');
@@ -386,10 +379,7 @@ export const useKanjiStore = create<KanjiStore>((set, get) => ({
 
     set({ confusionCounts: newCounts });
 
-    await supabase
-      .from('profiles')
-      .update({ confusion_counts: newCounts })
-      .eq('id', session.user.id);
+    await supabase.from('profiles').update({ confusion_counts: newCounts }).eq('id', session.userId);
   },
 
   updateKanjiStrokes: (character, strokes) => {
@@ -404,10 +394,9 @@ export const useKanjiStore = create<KanjiStore>((set, get) => ({
   },
 
   recoverLeech: async (id) => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session || !session.user) return;
-
-    const activeUserId = session.user.id;
+    const session = getLocalSession();
+    if (!session) return;
+    const activeUserId = session.userId;
     const { kanjiList, unlockedAchievements } = get();
     const cardIndex = kanjiList.findIndex(c => c.id === id);
     if (cardIndex === -1) return;
@@ -461,10 +450,9 @@ export const useKanjiStore = create<KanjiStore>((set, get) => ({
   },
 
   importCustomMarkdown: async (markdown, level) => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session || !session.user) return { success: false, count: 0 };
-
-    const activeUserId = session.user.id;
+    const session = getLocalSession();
+    if (!session) return { success: false, count: 0 };
+    const activeUserId = session.userId;
     const { kanjiList } = get();
     const parsed = parseKanjiMarkdown(markdown, level);
     if (parsed.length === 0) return { success: false, count: 0 };
@@ -525,21 +513,14 @@ export const useKanjiStore = create<KanjiStore>((set, get) => ({
   },
 
   resetDatabase: async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session && session.user) {
-      // Clear progress online
-      await supabase.from('kanji_progress').delete().eq('user_id', session.user.id);
+    const session = getLocalSession();
+    if (session) {
+      await supabase.from('kanji_progress').delete().eq('user_id', session.userId);
       await supabase.from('profiles').update({
-        xp: 0,
-        level: 1,
-        streak: 0,
-        last_study_date: null,
-        total_study_time: 0,
-        correct_answers: 0,
-        total_answers: 0,
-        unlocked_achievements: [],
-        confusion_counts: {}
-      }).eq('id', session.user.id);
+        xp: 0, level: 1, streak: 0, last_study_date: null,
+        total_study_time: 0, correct_answers: 0, total_answers: 0,
+        unlocked_achievements: [], confusion_counts: {}
+      }).eq('id', session.userId);
     }
 
     set({
