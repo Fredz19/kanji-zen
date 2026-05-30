@@ -124,7 +124,12 @@ export default function LoginView() {
         setTab('login');
         triggerConfetti();
       } else {
-        setError('Gagal membuat akun Master.');
+        // Registration failed — master email likely already exists with different password.
+        // Auto-switch to login form with 'master' pre-filled and show helpful message.
+        setUsername('master');
+        setPassword(masterPassword);
+        setTab('login');
+        setError('Akun master sudah terdaftar. Coba masuk langsung dengan password di bawah ini.');
       }
     } catch (err) {
       setError('Terjadi kesalahan saat pendaftaran.');
@@ -133,6 +138,7 @@ export default function LoginView() {
       setLoading(false);
     }
   };
+
 
   const handleRegisterWithToken = async (e: React.FormEvent) => {
     e.preventDefault();
