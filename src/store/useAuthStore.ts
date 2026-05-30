@@ -306,16 +306,33 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       await new Promise(r => setTimeout(r, 500));
     }
 
-    if (!profile) return false;
+    if (!profile) {
+      // Fallback: If database trigger fails to create the profile, create it manually
+      const { data: newProfile, error: insertError } = await supabase
+        .from('profiles')
+        .insert({
+          id: signUpData.user.id,
+          username: 'master',
+          role: 'master'
+        })
+        .select()
+        .single();
 
-    const { error: updateError } = await supabase
-      .from('profiles')
-      .update({ role: 'master' })
-      .eq('id', profile.id);
+      if (insertError) {
+        console.error("Gagal membuat profil master secara manual:", insertError);
+        return false;
+      }
+      profile = newProfile;
+    } else {
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ role: 'master' })
+        .eq('id', profile.id);
 
-    if (updateError) {
-      console.error("Gagal mengubah role ke master:", updateError);
-      return false;
+      if (updateError) {
+        console.error("Gagal mengubah role ke master:", updateError);
+        return false;
+      }
     }
 
     const userAccount: UserAccount = {
@@ -546,7 +563,22 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     }
 
     if (!profile) {
-      return { success: false, error: 'Gagal menginisialisasi profil pengguna online.' };
+      // Fallback: If database trigger fails to create the profile, create it manually
+      const { data: newProfile, error: insertError } = await supabase
+        .from('profiles')
+        .insert({
+          id: userId,
+          username: normUser,
+          role: 'user'
+        })
+        .select()
+        .single();
+
+      if (insertError) {
+        console.error("Gagal membuat profil user secara manual:", insertError);
+        return { success: false, error: 'Gagal menginisialisasi profil pengguna online.' };
+      }
+      profile = newProfile;
     }
 
     // Validate device limit (max 2)
