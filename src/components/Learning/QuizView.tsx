@@ -39,10 +39,22 @@ export default function QuizView({ onBackToDashboard, selectedLevel }: QuizViewP
   const speakText = (text: string) => {
     if (!window.speechSynthesis) return;
     window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'ja-JP';
-    utterance.rate = 0.85;
-    window.speechSynthesis.speak(utterance);
+    
+    // Gunakan delay 50ms untuk menghindari bug cancel() langsung pada iOS Safari
+    setTimeout(() => {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'ja-JP';
+      utterance.rate = 0.85;
+      
+      // Pilih suara bahasa Jepang secara eksplisit (penting untuk perangkat iOS)
+      const voices = window.speechSynthesis.getVoices();
+      const jaVoice = voices.find(v => v.lang === 'ja-JP' || v.lang.startsWith('ja'));
+      if (jaVoice) {
+        utterance.voice = jaVoice;
+      }
+      
+      window.speechSynthesis.speak(utterance);
+    }, 50);
   };
 
   // Compile gamified questions
